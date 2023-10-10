@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            float: left;
+            cursor: pointer;
+            
+        }
+        .box:hover {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    {% if user.is_authenticated %}  
+    <a href="/user/logout">Logout</a>
+    {% else %}
+    <a href="/user/signup">Signup</a>
+    <p>or already have an account</p>
+    <a href="/user/login">Login</a>
+    {% endif %}
+    <ul> 
+        <!-- Iterate over object_list -->
+        {% for restaurant in restaurant_list %} 
+        <!-- Display Objects -->
+        <a href="/{{restaurant.id}}">
+            <div class="box">
+                <li>{{ restaurant.name }}</li> 
+                <li>{{ restaurant.cuisines }}</li> 
+                <li>{{ restaurant.address }}</li> 
+                <li>{{ restaurant.opening_time }}</li> 
+                <li>{{ restaurant.closing_time }}</li> 
+                {% for img  in restaurant.restaurantimage_set.all%}
+                 <img src="{{img.image.url}}" alt="noimage" width="300px" height="200px">
+                {% endfor %}
+             </div>
+        </a>
+      
+        <!-- If object_list is empty  -->
+        {% empty %} 
+        <li>No objects yet.</li> 
+        {% endfor %} 
+    </ul>
+
+</body>
+</html>
