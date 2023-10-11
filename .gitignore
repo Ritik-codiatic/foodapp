@@ -1,0 +1,4 @@
+*.pyc
+media
+static/admin
+static/location_field

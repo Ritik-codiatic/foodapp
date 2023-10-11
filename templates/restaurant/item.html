@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>{{menucategory.name}}</h1>
+    {% for item in items %}
+    {{item.name}}
+    {{item.food_type}}
+    {% for price in item.menu_set.all %}
+    {{price.price}}
+    <img src="{{price.image.url}}" alt="noimage" height="100px" width="100px">
+    {% endfor %}
+    <input type="submit" value="buy">
+    <hr>
+    {% endfor %}
+</body>
+</html>

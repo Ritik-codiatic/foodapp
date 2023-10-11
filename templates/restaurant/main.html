@@ -4,12 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        .categoryBox
+        {
+             cursor: pointer;
+        }
+        .categoryBox:hover
+        {
+            opacity: 0.5;
+        }
+        .categoryName
+        {
+            color: black;
+        }
+    </style>
 </head>
 <body>
     <h1> {{restaurant.name}}</h1>
      <hr>
-    {% for item in menu %}
-    {{item.item.name}}
+    {% for category in menu_category %}
+    <div class="categoryBox">
+        <a href="/{{restaurant.id}}/items/{{category.id}}" class="categoryName">   
+            {{category.name}}
+        </a>
+    </div>
     <hr>
     {% endfor %}
 

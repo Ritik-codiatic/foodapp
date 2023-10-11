@@ -48,6 +48,8 @@ class MenuItem(models.Model):
 
 
 class Menu(models.Model):
+    '''model for item pricing for a particular restaurant '''
+    
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     price = models.CharField(max_length=100)
