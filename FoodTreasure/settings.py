@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'restaurantapp',
     # location_imp
     'location_field.apps.DefaultConfig',
+    # 'crispy_forms'
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -142,5 +144,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 #AUTHENTICATION_BACKENDS = ["Home.backend.CustomUserModelBackend"]

@@ -3,13 +3,14 @@ from django.contrib import auth,messages
 from django.views.generic import View
 from django.views.generic.list import ListView
 # local imp
-
+from restaurantapp.models import *
 from .forms import UserForm,LoginForm
 from .models import *
 # Create your views here.
 
 class SignupFormView(View):
     '''view for signing up the user or owner'''
+    
     form_class = UserForm
     template_name = 'user/signup.html'
 
@@ -61,7 +62,10 @@ class LogOutView(View):
     
 class OwnerView(View):
     '''view to redirecting owner to owner page'''
+
     template_name = 'owner/ownerhome.html'
     def get(self, request, *args, **kwargs):
-        return render(request,self.template_name)
+        restaurant = Restaurant.objects.filter(owner__id=request.user.id)
+        return render(request, self.template_name, {'restaurants' : restaurant})
  
+

@@ -1,0 +1,15 @@
+{% extends 'user/base.html' %}
+{% block content %}
+    <h1> {{restaurant.name}}</h1>
+     <h2>Menu</h2>
+     <hr>
+    {% for category in menucategory %}
+    <div class="categoryBox">
+        <a href="/{{restaurant.id}}/items/{{category.id}}" class="categoryName">
+        {{category.name}}
+        </a>
+    </div>
+    <hr>
+    {% endfor %}
+    <button><a href="/addmenucategory">Add Cuisines</a></button>
+{% endblock %}

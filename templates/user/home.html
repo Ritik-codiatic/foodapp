@@ -1,23 +1,27 @@
 {% extends 'user/base.html' %}
 {% block content %}
-        <!-- Iterate over object_list -->
-        {% for restaurant in restaurant_list %} 
-        <!-- Display Objects -->
-        <a href="/{{restaurant.id}}">
-            <div class="box">
-                <li>{{ restaurant.name }}</li> 
-                <li>{{ restaurant.address }}</li> 
-                <li>{{ restaurant.opening_time }}</li> 
-                <li>{{ restaurant.closing_time }}</li> 
-                {% for img  in restaurant.restaurantimage_set.all%}
-                 <img src="{{img.image.url}}" alt="noimage" width="300px" height="200px">
-                {% endfor %}
-             </div>
-        </a>
-      
-        <!-- If object_list is empty  -->
-        {% empty %} 
-        <li>No objects yet.</li> 
-        {% endfor %} 
-    </ul>
+          <!-- Iterate over object_list -->
+          {% for restaurant in restaurant_list %} 
+
+          <!-- Display Objects -->
+          <a href="/{{restaurant.id}}" class="card">
+              {% for img  in restaurant.restaurantimage_set.all%}
+              <img src="{{img.image.url}}" alt="balloon with an emoji face" class="card__img">
+              {% endfor %}
+              <span class="card__footer">
+                <span>{{ restaurant.name }}</span>
+                <span>{{ restaurant.address }}</span>
+              </span>
+              <!-- <span class="card__action">
+                <svg viewBox="0 0 448 512" title="play">
+                  <path d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z" />
+                </svg>
+              </span> -->
+            </a>
+          <!-- If object_list is empty  -->
+          {% empty %} 
+          <li>No objects yet.</li> 
+          {% endfor %} 
+
+ 
     {% endblock %}

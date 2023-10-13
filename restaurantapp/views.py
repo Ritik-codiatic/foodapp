@@ -7,6 +7,7 @@ from django.views.generic.list import ListView
 # local imp
 
 from .models import *
+from .forms import RestaurantForm,MenuCategoryForm
 # Create your views here.
 
 class HomeView(View):
@@ -51,3 +52,45 @@ class ItemView(View):
                 items.append(item.item)
         #items = menucategory.menuitem_set.all()
         return render(request, self.template_name, context = {'items':items,'menucategory':menucategory})
+    
+class AddRestaurantView(View):
+    '''view to add restaurant'''
+    
+    template_name = 'addrestaurant.html'
+    form_class = RestaurantForm
+    def get(self, request, *args, **kwargs):
+        restaurantform = self.form_class()
+        return render(request, self.template_name, context = {'restaurantform':restaurantform })
+    
+    def post(self, request, *args, **kwargs):
+        restaurantform = self.form_class(request.POST)
+        if restaurantform.is_valid():
+            owner = CustomUser.objects.get(id = request.user.id)
+            restaurantform.instance.owner = owner
+            restaurantform.save()
+            return redirect('/user/owner')
+        
+    
+class RestaurantHome(View):
+    '''view to show restaurant categories to owner'''
+
+    template_name = 'restauranthome.html'
+    def get(self, request, *args, **kwargs):
+        restaurant_id = kwargs['restaurant_id']
+        restaurant = Restaurant.objects.get(id = restaurant_id)
+        list1 = []
+        for item in restaurant.menu_set.all():
+            list1.append(item.item.menu_category)
+        menucategory = []
+        for item in list1:
+            if item not in menucategory:
+                menucategory.append(item)
+        return render(request, self.template_name, context={'menucategory':menucategory,'restaurant':restaurant})
+
+class AddMenuCategory(View):
+    '''view to add menu category'''
+    form_class = MenuCategoryForm
+    template_name = 'addmenucategory.html'
+    def get(self, request, *args, **kwargs):
+        categoryform = self.form_class()
+        return render(request, self.template_name, context={'categoryform':categoryform})

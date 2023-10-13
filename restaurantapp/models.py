@@ -5,7 +5,6 @@ from userapp.models import CustomUser
 # libs imp
 from location_field.models.plain import PlainLocationField
 
-
 class Restaurant(models.Model):
     RESTAURANT_TYPES = (('veg','veg'),
                         ('non veg','non veg'),
