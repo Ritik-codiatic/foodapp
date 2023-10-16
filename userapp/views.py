@@ -10,7 +10,7 @@ from .models import *
 
 class SignupFormView(View):
     '''view for signing up the user or owner'''
-    
+
     form_class = UserForm
     template_name = 'user/signup.html'
 
@@ -29,6 +29,7 @@ class SignupFormView(View):
 
 class LoginFormView(View):
     '''view to loging up the user or owner'''
+    
     form_class = LoginForm
     template_name = 'user/login.html'
 
@@ -51,7 +52,6 @@ class LoginFormView(View):
                 else:
                     return redirect('/user/owner') 
             
-        messages.info(request, "!login failed")
         return render(request, self.template_name, context = {'form':form})
             
 class LogOutView(View):

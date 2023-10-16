@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'location_field.apps.DefaultConfig',
     # 'crispy_forms'
     'crispy_forms',
+    #from geopy.geocoders import Nominatim
+    'geopy'
 ]
 
 MIDDLEWARE = [

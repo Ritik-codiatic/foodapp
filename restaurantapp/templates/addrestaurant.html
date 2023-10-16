@@ -13,5 +13,19 @@
     {{restaurantform.as_p}}
     <input type="submit" value="submit">
     </form>
+
+    <script>
+        $(document).ready(function(){
+            $("#map_location").click(function(){
+                var location = $("#id_location").val()
+
+                $.ajax({url : '/getaddress' , method : 'GET' , data : {'location':location},
+                 dataType : 'json' , success: function(result){
+                    console.log(result)
+                    $("#id_address").val(result['address'])
+                }})
+            })
+        })
+    </script>
 </body>
 </html>

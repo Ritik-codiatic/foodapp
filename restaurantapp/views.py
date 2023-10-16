@@ -4,10 +4,14 @@ from django.shortcuts import render,redirect
 from django.contrib import auth,messages
 from django.views.generic import View
 from django.views.generic.list import ListView
+from django.http import JsonResponse
 # local imp
 
 from .models import *
 from .forms import RestaurantForm,MenuCategoryForm
+
+# lib imp
+from geopy.geocoders import Nominatim
 # Create your views here.
 
 class HomeView(View):
@@ -94,3 +98,13 @@ class AddMenuCategory(View):
     def get(self, request, *args, **kwargs):
         categoryform = self.form_class()
         return render(request, self.template_name, context={'categoryform':categoryform})
+
+class GetAddress(View):
+    def get(self, request, *args, **kwargs):
+        location = request.GET.get('location')
+        coordinates = location.split(',')
+        geolocator = Nominatim(user_agent="geoapiExercises")
+        address = geolocator.reverse(coordinates[0]+","+coordinates[1])
+        address = address[0]
+        
+        return JsonResponse({'address':address})
