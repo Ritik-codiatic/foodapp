@@ -147,4 +147,4 @@ class AddItems(View):
         return render(request, self.template_name, context={'itemform':itemform, 'itempriceform':itempriceform})
 
     def post(self, request, *args, **kwargs):
-        
+        pass
