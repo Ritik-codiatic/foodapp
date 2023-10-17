@@ -1,15 +1,57 @@
 {% extends 'user/base.html' %}
 {% block content %}
+
+<style>
+    .hide{
+        display: none;
+    }
+</style>
     <h1> {{restaurant.name}}</h1>
      <h2>Menu</h2>
      <hr>
+     <!-- <button id="addcuisine" >Add Cuisine</button>
+     <div id="categoryform"  class="categoryhidden">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{categoryform.as_p}}
+            <input type="submit" value="Add category">
+        </form>
+     </div> -->
     {% for category in menucategory %}
     <div class="categoryBox">
-        <a href="/{{restaurant.id}}/items/{{category.id}}" class="categoryName">
+        <a href="/restaurantitem/{{restaurant.id}}/{{category.id}}">
         {{category.name}}
         </a>
+        <hr>
     </div>
-    <hr>
+    
     {% endfor %}
-    <button><a href="/addmenucategory">Add Cuisines</a></button>
+    <script>
+        $(document).ready(function(){
+            $(".items").hide()
+            $("button").click(function(){
+            
+                    $(".items").show()
+    
+                
+            })
+        })
+    </script>
+    <!-- <button><a href="/addmenucategory">Add Cuisine</a></button> -->
+    <!-- <a href="/{{restaurant.id}}/items/{{category.id}}" class="categoryName">
+        
+    </a> -->
+    <!-- <button class="showitems">Show Items</button>
+        <div class="items">
+            {% for item in category.menuitem_set.all %}
+                {{item.name}} 
+                {{item.food_type}} 
+                {% for price in item.menu_set.all %}
+                {{price.price}} 
+                <img src="{{price.image.url}}" alt="noimage" height="100px" width="100px"> 
+                <hr>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    <hr> -->
 {% endblock %}

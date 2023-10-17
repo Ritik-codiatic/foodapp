@@ -1,3 +1,13 @@
+/* category form hidden */
+.formhidden
+{
+	display: none;
+	background-color: yellow;
+}
+
+
+/* 
+___________________ */
 .categoryBox
         {
              cursor: pointer;

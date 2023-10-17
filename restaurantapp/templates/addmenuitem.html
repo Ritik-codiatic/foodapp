@@ -1,0 +1,20 @@
+
+{% extends 'user/base.html' %}
+{% block item %}
+<a href="/additem/{{restaurant.id}}">Add Items</a>
+{% endblock %}
+{% block content %}
+
+
+    {% for item in items %}
+    <input type="text" name="itemname" value="{{item.name}}" size="10">
+    <input type="text" name="itemtype" value="{{item.food_type}}" size="3">
+    {% for price in item.menu_set.all %}
+    <input type="text" name="itemtype" value="{{price.price}}" size="3"> 
+    <img src="{{price.image.url}}" alt="noimage" height="100px" width="100px">
+    {% endfor %}
+    <input type="submit" value="buy">
+    <hr>
+    {% endfor %}
+
+ {% endblock %}

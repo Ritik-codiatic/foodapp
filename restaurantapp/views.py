@@ -5,10 +5,11 @@ from django.contrib import auth,messages
 from django.views.generic import View
 from django.views.generic.list import ListView
 from django.http import JsonResponse
+from django.urls import reverse
 # local imp
 
 from .models import *
-from .forms import RestaurantForm,MenuCategoryForm
+from .forms import *
 
 # lib imp
 from geopy.geocoders import Nominatim
@@ -78,9 +79,11 @@ class AddRestaurantView(View):
 class RestaurantHome(View):
     '''view to show restaurant categories to owner'''
 
+    form_class = MenuCategoryForm
     template_name = 'restauranthome.html'
     def get(self, request, *args, **kwargs):
         restaurant_id = kwargs['restaurant_id']
+        categoryform = self.form_class()
         restaurant = Restaurant.objects.get(id = restaurant_id)
         list1 = []
         for item in restaurant.menu_set.all():
@@ -89,7 +92,14 @@ class RestaurantHome(View):
         for item in list1:
             if item not in menucategory:
                 menucategory.append(item)
-        return render(request, self.template_name, context={'menucategory':menucategory,'restaurant':restaurant})
+        return render(request, self.template_name, context={'categoryform':categoryform,'menucategory':menucategory,'restaurant':restaurant})
+    # def post(self, request, *args, **kwargs):
+        # restaurant_id = kwargs['restaurant_id']
+        # categoryform = self.form_class(request.POST)
+        # if categoryform.is_valid():
+        #     categoryform.save()
+        #     return redirect(reverse('restauranthome',kwargs= {'restaurant_id':restaurant_id}))
+
 
 class AddMenuCategory(View):
     '''view to add menu category'''
@@ -108,3 +118,33 @@ class GetAddress(View):
         address = address[0]
         
         return JsonResponse({'address':address})
+    
+
+class UpdateItem(View):
+    '''view for updating restaurant item by owner'''
+
+    template_name = 'addmenuitem.html'
+    def get(self, request, *args, **kwargs):
+        category_id = kwargs['category_id']
+        restaurant_id = kwargs['restaurant_id']
+        menucategory = MenuCategory.objects.get(id = category_id)
+        restaurant = Restaurant.objects.get(id = restaurant_id)
+        items = []
+        for item in restaurant.menu_set.all():
+            if item.item.menu_category.id == menucategory.id:
+                items.append(item.item)
+        return render(request, self.template_name, context={'items':items,'restaurant':restaurant})
+    
+class AddItems(View):
+    '''add items by owner'''
+    
+    template_name = 'additem.html'
+    itemform_form_class = ItemForm
+    itemprice_form_class = ItemPriceForm
+    def get(self, request, *args, **kwargs):
+        itemform = self.itemform_form_class()
+        itempriceform = self.itemprice_form_class()
+        return render(request, self.template_name, context={'itemform':itemform, 'itempriceform':itempriceform})
+
+    def post(self, request, *args, **kwargs):
+        

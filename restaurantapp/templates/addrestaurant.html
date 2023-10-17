@@ -21,7 +21,6 @@
 
                 $.ajax({url : '/getaddress' , method : 'GET' , data : {'location':location},
                  dataType : 'json' , success: function(result){
-                    console.log(result)
                     $("#id_address").val(result['address'])
                 }})
             })

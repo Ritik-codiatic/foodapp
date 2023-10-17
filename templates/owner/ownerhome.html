@@ -5,7 +5,7 @@
         {% for restaurant in restaurants %} 
         
         <!-- Display Objects -->
-        <a href="/{{restaurant.id}}/restauranthome" class="card">
+        <a href="/restauranthome/{{restaurant.id}}" class="card">
             {% for img  in restaurant.restaurantimage_set.all%}
             <img src="{{img.image.url}}" alt="balloon with an emoji face" class="card__img">
             {% endfor %}

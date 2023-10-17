@@ -16,3 +16,14 @@ class MenuCategoryForm(ModelForm):
     class Meta:
         model = MenuCategory
         fields = '__all__'
+
+class ItemForm(ModelForm):
+    class Meta:
+        model = MenuItem
+        fields = '__all__'
+
+class ItemPriceForm(ModelForm):
+
+    class Meta:
+        model = Menu
+        exclude = ['restaurant','item']
