@@ -21,6 +21,7 @@ class ItemForm(ModelForm):
     class Meta:
         model = MenuItem
         fields = '__all__'
+        #exclude = ['menu_category']
 
 class ItemPriceForm(ModelForm):
 

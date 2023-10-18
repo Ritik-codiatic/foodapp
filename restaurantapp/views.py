@@ -6,6 +6,7 @@ from django.views.generic import View
 from django.views.generic.list import ListView
 from django.http import JsonResponse
 from django.urls import reverse
+from django.db.models import Q
 # local imp
 
 from .models import *
@@ -147,4 +148,27 @@ class AddItems(View):
         return render(request, self.template_name, context={'itemform':itemform, 'itempriceform':itempriceform})
 
     def post(self, request, *args, **kwargs):
-        pass
+        restaurant_id = kwargs['restaurant_id']
+        restaurant = Restaurant.objects.get(id=restaurant_id)
+        itemform = self.itemform_form_class(request.POST)
+        itempriceform = self.itemprice_form_class(request.POST,request.FILES)
+        if itemform.is_valid() and itempriceform.is_valid():
+            item = itemform.save()
+            itempriceform.instance.restaurant = restaurant
+            itempriceform.instance.item = item
+            itempriceform.save()
+            return redirect(reverse('restauranthome',kwargs= {'restaurant_id':restaurant_id}))
+    
+class Search(View):
+    '''view for searching restaurant'''
+
+    template_name = 'user/home.html'
+    def get(self, request, *args, **kwargs):
+        restaurant = request.GET['search']
+        result_restaurant = Restaurant.objects.filter(Q(name__icontains=restaurant) | Q(address__icontains=restaurant))
+        return render(request, self.template_name, {'restaurant_list':result_restaurant})
+    
+
+class UpdateView(View):
+    '''view for updating '''
+    

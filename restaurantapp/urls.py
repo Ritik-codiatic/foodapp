@@ -1,6 +1,6 @@
 from django.urls import path
 # local imp
-from .views import HomeView, RestaurantView, ItemView, AddRestaurantView,RestaurantHome, AddMenuCategory, GetAddress, UpdateItem, AddItems
+from .views import HomeView, RestaurantView, ItemView, AddRestaurantView,RestaurantHome, AddMenuCategory, GetAddress, UpdateItem, AddItems, Search
 
 urlpatterns = [
     path('',HomeView.as_view()),
@@ -11,5 +11,7 @@ urlpatterns = [
     path('addmenucategory', AddMenuCategory.as_view()),
     path('getaddress', GetAddress.as_view()),
     path('restaurantitem/<int:restaurant_id>/<int:category_id>', UpdateItem.as_view()),
-    path('additem/<int:restaurant_id>',AddItems.as_view())
+    path('additem/<int:restaurant_id>',AddItems.as_view(), name='additems'),
+    path('search',Search.as_view(),name='search-result'),
+    
  ] 
