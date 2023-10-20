@@ -4,6 +4,8 @@ from userapp.models import CustomUser
 
 # libs imp
 from location_field.models.plain import PlainLocationField
+from datetime import datetime
+
 
 class Restaurant(models.Model):
     RESTAURANT_TYPES = (('veg','veg'),
@@ -51,7 +53,7 @@ class Menu(models.Model):
     
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
-    price = models.CharField(max_length=100)
+    price = models.PositiveIntegerField()
     image = models.ImageField(upload_to='pics/menuitems')
     description = models.TextField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -66,8 +68,23 @@ class RestaurantImage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-
+class Common(models.Model):  # COMM0N 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta: 
+        abstract = True
+class Cart(Common,models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    is_paid = models.BooleanField(default=False)
+    order_date = models.DateField(null=True)
+    payment_type = models.CharField(max_length=100, null=True)
+    payment_id = models.CharField(max_length=100, null=True)
     
+class CartItem(Common,models.Model):
+    cart_item = models.ForeignKey(Menu, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+  
 # def get_menu_category():
 #     res = RestaurantMenu.objects.first()
 #     manu_category = MenuCategory.objects.create(res.id, "default menu category")

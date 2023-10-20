@@ -12,9 +12,15 @@
     {% for price in item.menu_set.all %}
      {{price.price}}
     <img src="{{price.image.url}}" alt="noimage" height="100px" width="100px">
+    {% if request.user.is_authenticated %}
+         <span class="storefront_add_to_cart">
+             <a href="/addcart/{{restaurant.id}}/{{price.id}}"><i class="fa fa-cart-plus" style="font-size: 1.73em;" aria-hidden="true"></i></a>
+             <a href="/cart/{{price.id}}"><i class="fa fa-minus" style="font-size: 1.73em;" aria-hidden="true"></i></a>
+ 
+         </span>
+    {% endif %}
     {% endfor %}
-    <input type="submit" value="buy">
-    <!-- <button><a href="{% url 'update-item' pk=item.id %}">Update Item</a></button> -->
+    
     <hr>
     {% endfor %}
 

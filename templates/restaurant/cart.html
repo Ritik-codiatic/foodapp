@@ -1,0 +1,21 @@
+{% extends 'user/base.html' %}
+{% block item %}
+<a href="/additem/{{restaurant.id}}">Add Items</a>
+{% endblock %}
+{% block content %}
+
+    {% for item in cart_item %}
+    {{item.cart_item.item.name}} <br>
+    {{item.cart_item.item.food_type}} <br>
+    <img src="{{item.cart_item.image.url}}" alt="noimage" width="100px" height="100px"> <br>
+    {{item.cart_item.price}} <br>
+   <h5>Quantity : {{item.quantity}}</h5> 
+    <hr>
+    {% endfor %}
+    {% if total_price %}
+    <h1>Total price</h1>
+    <h2>{{total_price}}</h2>
+    {% else %}
+    Empty cart
+    {% endif %}
+{% endblock %}

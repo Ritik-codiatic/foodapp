@@ -10,8 +10,8 @@ from django.utils.translation import gettext_lazy as _
 
 class CustomUser(AbstractUser):
 
-    USER_TYPES = (("customer","Customer"),
-             ("owner","Restaurent Owner")
+    USER_TYPES = (("Customer","customer"),
+             ("Restaurent Owner","owner")
             )
     GENDER_CHOICES = (("Male","Male"),("Female","Female"))
 
