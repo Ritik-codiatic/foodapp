@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{form.media}}
+</head>
+<body>
+    <form action="" method="post">
+        {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" value="submit">
+    </form>
+
+    <script>
+        $(document).ready(function(){
+            $("#map_location").click(function(){
+                var location = $("#id_location").val()
+
+                $.ajax({url : '/getaddress' , method : 'GET' , data : {'location':location},
+                 dataType : 'json' , success: function(result){
+                    $("#id_address").val(result['address'])
+                }})
+            })
+        })
+    </script>
+</body>
+</html>

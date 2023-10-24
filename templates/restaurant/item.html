@@ -7,21 +7,70 @@
 
 
     {% for item in items %}
+   
     {{item.name}}
     {{item.food_type}}
     {% for price in item.menu_set.all %}
+    <input type="hidden" name="item_id" value="{{price.id}}" id="itemid">
      {{price.price}}
     <img src="{{price.image.url}}" alt="noimage" height="100px" width="100px">
     {% if request.user.is_authenticated %}
-         <span class="storefront_add_to_cart">
-             <a href="/addcart/{{restaurant.id}}/{{price.id}}"><i class="fa fa-cart-plus" style="font-size: 1.73em;" aria-hidden="true"></i></a>
-             <a href="/cart/{{price.id}}"><i class="fa fa-minus" style="font-size: 1.73em;" aria-hidden="true"></i></a>
- 
-         </span>
+             <!-- <a href="/addcart/{{restaurant.id}}/{{price.id}}"><i class="fa fa-cart-plus" style="font-size: 1.73em;" aria-hidden="true"></i></a>
+             <a href="/cart/{{price.id}}"><i class="fa fa-minus" style="font-size: 1.73em;" aria-hidden="true"></i></a> -->
+                <div class="row">
+                    <div class="col-md-4" id="product-1">
+                    <button class="button">+</button>
+                    <button class="button">-</button>
+                    <input type="hidden" name="item_id" value="{{price.id}}" class="itemid">
+                        <input type="number" class="input"  value="1" min="1" />
+                        <button type="button" class="btn btn-primary btn-sm cartbutton" >
+                            Add to Cart<i class="fa fa-cart-plus" style="font-size: 1.73em;" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                </div>
+         
     {% endif %}
     {% endfor %}
     
     <hr>
     {% endfor %}
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+         <script>
+            $(document).ready(function() {
+                    var newVal
+                    $(".button").on("click", function() {
+                    var $button = $(this);
+                    var $parent = $button.parent(); 
+                    var oldValue = $parent.find('.input').val();
+                    
+                    if ($button.text() == "+") {
+                        newVal = parseFloat(oldValue) + 1;
+                        } else {
+                        // Don't allow decrementing below zero
+                        if (oldValue > 1) {
+                            newVal = parseFloat(oldValue) - 1;
+                            } else {
+                            newVal = 1;
+                        }
+                        }
+                        $parent.find('.input').val(newVal);
+                        
+                    });
+                    $(".cartbutton").click(function(){
+                        var button = $(this)
+                        var parent = button.parent()
+                        var item_id = parent.find('.itemid').val();
+                        $.ajax({
+                            url : '/addcart' , 
+                            method : 'GET' ,
+                             data : {'item_id':item_id ,'quantity':newVal},
+                            dataType : 'json' , 
+                            success: function(result){
+    
+                         }
+                        })
+                    })
+                    });
+         </script>
+         
  {% endblock %}

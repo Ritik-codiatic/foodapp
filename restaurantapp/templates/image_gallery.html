@@ -1,0 +1,14 @@
+{% extends 'user/base.html' %}
+
+{% block restaurantprofile %}
+<a href="/editrestaurant/{{restaurant.id}}">Edit your Restaurant</a>
+{% endblock %}
+{% block content %}
+
+<div class="container">
+    {% for image in images %}
+    <img src="{{image.image.url}}" alt="noimage" height="300px" width="300px">
+    {% endfor %}
+</div>
+
+{% endblock %}

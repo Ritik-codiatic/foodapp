@@ -28,3 +28,9 @@ class ItemPriceForm(ModelForm):
     class Meta:
         model = Menu
         exclude = ['restaurant','item']
+
+class RestaurantImageForm(ModelForm):
+
+    class Meta:
+        model = RestaurantImage
+        exclude = ['restaurant']

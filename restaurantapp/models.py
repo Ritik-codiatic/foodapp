@@ -6,7 +6,6 @@ from userapp.models import CustomUser
 from location_field.models.plain import PlainLocationField
 from datetime import datetime
 
-
 class Restaurant(models.Model):
     RESTAURANT_TYPES = (('veg','veg'),
                         ('non veg','non veg'),
@@ -19,8 +18,8 @@ class Restaurant(models.Model):
     contact_number = models.CharField(max_length=10)
     restaurant_type = models.CharField(max_length=20,choices=RESTAURANT_TYPES)
     location = PlainLocationField(based_fields=['city'], zoom=7,null = True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True ,null=True)
+    updated_at = models.DateTimeField(auto_now=True , null=True)
 
     def __str__(self) -> str:
         return self.name
@@ -64,7 +63,7 @@ class Menu(models.Model):
 
 class RestaurantImage(models.Model):
     restaurant = models.ForeignKey(Restaurant,on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='pics/restaurant_images')
+    image = models.ImageField(upload_to='pics/restaurant_images' )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
