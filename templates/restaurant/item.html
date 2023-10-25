@@ -4,16 +4,35 @@
 <a href="/additem/{{restaurant.id}}">Add Items</a>
 {% endblock %}
 {% block content %}
-
+<script>
+    $(document).ready(function(){
+        $(".deleteitem").click(function(){
+            var button = $(this)
+            var parent = button.parent()
+            var item_id = parent.find(".itemid").val()
+            var csrf_token = '{{ csrf_token }}';
+            $.ajax({
+                url : `/edit-item/${item_id}`,
+                type : "DELETE",
+                 beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", csrf_token); 
+                        },
+                        success : function(result){
+                        window.location.reload()
+                        },
+            })
+        })
+    })
+</script>
+<div class="container">
 
     {% for item in items %}
    
-    {{item.name}}
-    {{item.food_type}}
-    {% for price in item.menu_set.all %}
-    <input type="hidden" name="item_id" value="{{price.id}}" id="itemid">
-     {{price.price}}
-    <img src="{{price.image.url}}" alt="noimage" height="100px" width="100px">
+    {{item.item.name}}
+    {{item.item.food_type}}
+    <input type="hidden" name="item_id" value="{{item.id}}" class="itemid">
+     {{item.price}}
+    <img src="{{item.image.url}}" alt="noimage" height="100px" width="100px">
     {% if request.user.is_authenticated %}
              <!-- <a href="/addcart/{{restaurant.id}}/{{price.id}}"><i class="fa fa-cart-plus" style="font-size: 1.73em;" aria-hidden="true"></i></a>
              <a href="/cart/{{price.id}}"><i class="fa fa-minus" style="font-size: 1.73em;" aria-hidden="true"></i></a> -->
@@ -21,17 +40,23 @@
                     <div class="col-md-4" id="product-1">
                     <button class="button">+</button>
                     <button class="button">-</button>
-                    <input type="hidden" name="item_id" value="{{price.id}}" class="itemid">
+                    <input type="hidden" name="item_id" value="{{item.id}}" class="itemid">
                         <input type="number" class="input"  value="1" min="1" />
                         <button type="button" class="btn btn-primary btn-sm cartbutton" >
                             Add to Cart<i class="fa fa-cart-plus" style="font-size: 1.73em;" aria-hidden="true"></i>
                           </button>
                         </div>
                 </div>
-         
+         {% if not request.user.user_type == "Customer" %}
+          {% if request.user.is_authenticated %}
+         <div>
+            <input type="hidden" name="item_id" value="{{item.id}}" class="itemid">
+                    <button><a href="/edit-item/{{item.id}}">Edit Item</a></button>
+                    <button class="deleteitem">Delete Item</button>
+        </div>
+         {% endif %}
+         {% endif %}
     {% endif %}
-    {% endfor %}
-    
     <hr>
     {% endfor %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -72,5 +97,5 @@
                     })
                     });
          </script>
-         
+         </div>
  {% endblock %}

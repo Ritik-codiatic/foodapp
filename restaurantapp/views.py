@@ -51,15 +51,38 @@ class ItemView(View):
         category_id = kwargs['category_id']
         restaurant_id = kwargs['restaurant_id']
         menucategory = MenuCategory.objects.get(id = category_id)
-        restaurant = Restaurant.objects.get(id = restaurant_id)
-        #print(restaurant.menu_set.all()[0].item.menu_category.id)
-        items = []
-        for item in restaurant.menu_set.all():
-            if item.item.menu_category.id == menucategory.id:
-                items.append(item.item)
-        #items = menucategory.menuitem_set.all()
+        restaurant = Restaurant.objects.get(id = restaurant_id)      
+        items = Menu.objects.filter(restaurant=restaurant,item__menu_category = menucategory)
         return render(request, self.template_name, context = {'items':items,'menucategory':menucategory,'restaurant':restaurant})
+
+class EditItemView(View):
+    '''view to edit restaurant item'''
+
+    template_name = 'edit_item.html'  
+    itemform_class = ItemForm
+    itempriceform_class = ItemPriceForm
+    def get(self, request, *args, **kwargs):
+        item_id = kwargs['item_id']
+        menu = Menu.objects.get(id = item_id)
+        itempriceform = self.itempriceform_class(instance=menu)
+        menuitem = MenuItem.objects.get(id = menu.item.id)
+        itemform = self.itemform_class(instance=menuitem)
+        return render(request, self.template_name, context={'itemform':itemform,'itempriceform':itempriceform})
     
+    def post(self, request, *args, **kwargs):
+        itempriceform = self.itempriceform_class(request.POST,request.FILES)
+        itemform = self.itemform_class(request.POST)
+        if itemform.is_valid() and itempriceform.is_valid():
+            itempriceform.save()
+            itemform.save()
+            return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+    
+    def delete(self, request, *args, **kwargs):
+        item_id = kwargs['item_id']
+        Menu.objects.get(id = item_id).delete()
+        return JsonResponse({})
+    
+
 class AddRestaurantView(View):
     '''view to add restaurant'''
     
@@ -86,7 +109,6 @@ class RestaurantHome(View):
     def get(self, request, *args, **kwargs):
         restaurant_id = kwargs['restaurant_id']
         categoryform = self.form_class()
-        imageform = RestaurantImageForm()
         restaurant = Restaurant.objects.get(id = restaurant_id)
         list1 = []
         for item in restaurant.menu_set.all():
@@ -95,25 +117,12 @@ class RestaurantHome(View):
         for item in list1:
             if item not in menucategory:
                 menucategory.append(item)
-        return render(request, self.template_name, context={'imageform':imageform,'categoryform':categoryform,'menucategory':menucategory,'restaurant':restaurant})
-    # def post(self, request, *args, **kwargs):
-        # restaurant_id = kwargs['restaurant_id']
-        # categoryform = self.form_class(request.POST)
-        # if categoryform.is_valid():
-        #     categoryform.save()
-        #     return redirect(reverse('restauranthome',kwargs= {'restaurant_id':restaurant_id}))
-    def post(self, request, *args, **kwargs):
-        restaurant_id = kwargs['restaurant_id']
-        imageform = RestaurantImageForm(request.POST,request.FILES)
-        restaurant = Restaurant.objects.get(id = restaurant_id)
-        if imageform.is_valid():
-            imageform.instance.restaurant = restaurant
-            imageform.save()
-            return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+        return render(request, self.template_name, context={'categoryform':categoryform,'menucategory':menucategory,'restaurant':restaurant})
 
 
 class AddMenuCategory(View):
     '''view to add menu category'''
+
     form_class = MenuCategoryForm
     template_name = 'addmenucategory.html'
     def get(self, request, *args, **kwargs):
@@ -232,19 +241,26 @@ class EditRestaurant(View):
         Restaurant.objects.get(id = restaurant_id).delete()
         return JsonResponse({})
 
-    
-class ImageDeleteView(View):
-    '''view for deleting image '''
-
-    def delete(self, request, image_id, *args, **kwargs):
-        RestaurantImage.objects.get(id = image_id).delete()
-        return JsonResponse({})
-
 class ImageGallery(View):
     '''view for viewing image'''
 
+    form_class = RestaurantImageForm
     template_name = 'image_gallery.html'
     def get(self, request, *args, **kwargs):
+        image_form = self.form_class()
         restaurant_id = kwargs['restaurant_id']
         images = RestaurantImage.objects.filter(restaurant=restaurant_id)
-        return render(request, self.template_name, context={'images':images})
+        return render(request, self.template_name, context={'images':images,'image_form':image_form})
+    
+    def post(self, request, *args, **kwargs):
+        restaurant_id = kwargs['restaurant_id']
+        imageform = RestaurantImageForm(request.POST,request.FILES)
+        restaurant = Restaurant.objects.get(id = restaurant_id)
+        if imageform.is_valid():
+            imageform.instance.restaurant = restaurant
+            imageform.save()
+            return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+        
+    def delete(self, request, restaurant_id, *args, **kwargs):
+        RestaurantImage.objects.get(id = restaurant_id).delete()
+        return JsonResponse({})

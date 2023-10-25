@@ -84,6 +84,7 @@ class CartItem(Common,models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
   
+  
 # def get_menu_category():
 #     res = RestaurantMenu.objects.first()
 #     manu_category = MenuCategory.objects.create(res.id, "default menu category")

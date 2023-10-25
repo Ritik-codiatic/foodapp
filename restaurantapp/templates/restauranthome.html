@@ -57,39 +57,7 @@
             })
                 }
                 })
-        })
-        $(".deletebutton").click(function(){
-            var button = $(this)
-            var parent = button.parent()
-            var image_id = parent.find('.image_id').val();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "DELETE",
-                        url: `/image-delete/${image_id}`,
-                        // data : {'image_id':image_id},
-                        beforeSend: function(xhr) {
-                            xhr.setRequestHeader("X-CSRFToken", csrf_token);
-                        },
-                        success : function(result){
-                            
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                            
-                        }
-                    });
-
-                }
-                })
-        })
+        })  
     })
 </script>
 <div id="carouselExample" class="carousel slide" >
@@ -97,19 +65,11 @@
         {% for img in restaurant.restaurantimage_set.all %}
         {% if forloop.first %} 
       <div class="carousel-item active" >
-        <div class="button-overlay">
-            <input type="hidden"  value="{{img.id}}" class="image_id">
         <img src="{{img.image.url}}" class="d-block w-100" alt="noimage" >
-        <button class="deletebutton">Delete</button>
-        </div>
       </div>
       {% else %}
       <div class="carousel-item" >
-        <div class="button-overlay">
-            <input type="hidden"  value="{{img.id}}" class="image_id">
             <img src="{{img.image.url}}" class="d-block w-100" alt="noimage">
-            <button class="deletebutton">Delete</button>
-        </div>
       </div>
       {% endif %}
         {% endfor %}
@@ -123,13 +83,9 @@
       <span class="visually-hidden">Next</span>
     </button>
   </div>
-        
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>uplode more image {{imageform.image}}</p>
-        <input type="submit" value="upload">
-    </form>
+  <hr>    
     <button><a href="/image-gallery/{{restaurant.id}}">Image Gallery</a></button>
+    <hr>
     <div style="margin-left: 1000px;">
         <button id="remove_restaurant">Remove This Restaurant</button>
     </div>
@@ -147,7 +103,7 @@
      </div> -->
     {% for category in menucategory %}
     <div class="categoryBox">
-        <a href="/restaurantitem/{{restaurant.id}}/{{category.id}}">
+        <a href="/items/{{restaurant.id}}/{{category.id}}">
         {{category.name}}
         </a>
         <hr>
