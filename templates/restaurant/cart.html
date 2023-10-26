@@ -3,19 +3,68 @@
 <a href="/additem/{{restaurant.id}}">Add Items</a>
 {% endblock %}
 {% block content %}
-
-    {% for item in cart_item %}
-    {{item.cart_item.item.name}} <br>
-    {{item.cart_item.item.food_type}} <br>
-    <img src="{{item.cart_item.image.url}}" alt="noimage" width="100px" height="100px"> <br>
-    {{item.cart_item.price}} <br>
-   <h5>Quantity : {{item.quantity}}</h5> 
-    <hr>
-    {% endfor %}
-    {% if total_price %}
+    {% if cart_item %}
+        {% for item in cart_item %}
+        <div class="item_div">
+            <input type="hidden" class="item_quantity" value="{{item.quantity}}"> 
+        {{item.cart_item.item.name}} <br>
+        {{item.cart_item.item.food_type}} <br>
+        <img src="{{item.cart_item.image.url}}" alt="noimage" width="100px" height="100px"> <br>
+        Quantity :<div class="row">
+            <div class="col-md-4" id="product-1">
+                <input type="hidden" name="item_id" value="{{item.id}}" class="itemid">
+                <input type="number" class="input"  value="{{item.quantity}}" min="1" />
+            <button class="button">+</button>
+            <button class="button">-</button>
+                </div>
+        </div>
+        <input type="hidden" class="item_price" value="{{item.cart_item.price}}">  
+        <p>Price :{{item.cart_item.price}} <h5 class="item_price">{% widthratio item.quantity 1 item.cart_item.price %}</h5></p>
+        <hr>
+        </div>
+        {% endfor %}   
     <h1>Total price</h1>
-    <h2>{{total_price}}</h2>
+    <h3 id="total_price"></h2>
     {% else %}
     Empty cart
     {% endif %}
+    <script>
+            $(document).ready(function(){
+                var newVal = 1
+                    $(".button").on("click", function() {
+                    var $button = $(this);
+                    var $parent = $button.parent(); 
+                    var oldValue = $parent.find('.input').val();
+                    if ($button.text() == "+") {
+                        newVal = parseFloat(oldValue) + 1;
+                        } else {
+                        // Don't allow decrementing below zero
+                        if (oldValue > 1) {
+                            newVal = parseFloat(oldValue) - 1;
+                            } else {
+                            newVal = 1;
+                        }
+                        }
+                        $parent.find('.input').val(newVal);
+                        
+                    });
+            })
+                   
+        // $(document).ready(function(){
+            // var current = $(".item_div")
+            // var currentdiv = $(this)
+            // var quantity =  currentdiv.find(".item_quantity").val()
+        //     // console.log(quantity)
+        //     $(".item_div").ready(function(){
+        //         var current = $(this)
+        //         var children = current.children()
+        //         var quantity =  children.find(".item_quantity").val()
+        //         var price = children.find(".item_price").val()
+        //         var total = quantity * price
+        //         console.log(price)
+        //         console.log(quantity)
+        //         $(".item_price").text(total)
+        //     })           
+        // })
+    </script>
 {% endblock %}

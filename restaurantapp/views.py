@@ -191,28 +191,26 @@ class Search(View):
 class AddCartView(View):
     '''view for adding item to cart '''
 
-    def get(self, request, *args, **kwargs):
-        item_id = request.GET.get('item_id')
-        item_quantity = request.GET.get('quantity') 
-        item = Menu.objects.get(id = item_id)
-        #user = CustomUser.objects.get(id=request.user.id)
-        cart ,_= Cart.objects.get_or_create(user = request.user)
-        cart.save()
-        cartitem = CartItem.objects.create(cart_item=item, cart=cart, quantity = item_quantity)
-        cartitem.save()
-
-        return JsonResponse({})
-
-
-class CartView(View):
-    '''view for showing cart'''
-    
     template_name = 'restaurant/cart.html'
     def get(self, request, *args, **kwargs):
         cart ,_= Cart.objects.get_or_create(user=request.user)
         cart_items = CartItem.objects.filter(cart=cart.id)
-        total_price = cart_items.aggregate(total = Sum('cart_item__price'))
-        return render(request, self.template_name, {'cart_item':cart_items,'total_price':total_price['total']})
+      #  total_price = cart_items.aggregate(total = Sum('cart_item__price'))
+        return render(request, self.template_name, {'cart_item':cart_items})
+                                                    #'total_price':total_price['total']})
+
+    def post(self, request, *args, **kwargs):
+        item_id = request.POST.get('item_id')
+        item_quantity = request.POST.get('quantity') 
+        item = Menu.objects.get(id = item_id)
+        cart ,_= Cart.objects.get_or_create(user = request.user)
+        cart.save()
+        cartitem ,_= CartItem.objects.get_or_create(cart_item=item, cart=cart)
+        cartitem.quantity = item_quantity
+        cartitem.save()
+
+        return JsonResponse({'item_quantity':item_quantity})
+  
     
 class EditRestaurant(View):
     '''view for editing restaurant'''

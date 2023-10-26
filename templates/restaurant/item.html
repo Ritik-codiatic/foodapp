@@ -48,13 +48,11 @@
                         </div>
                 </div>
          {% if not request.user.user_type == "Customer" %}
-          {% if request.user.is_authenticated %}
          <div>
             <input type="hidden" name="item_id" value="{{item.id}}" class="itemid">
                     <button><a href="/edit-item/{{item.id}}">Edit Item</a></button>
                     <button class="deleteitem">Delete Item</button>
         </div>
-         {% endif %}
          {% endif %}
     {% endif %}
     <hr>
@@ -62,12 +60,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
          <script>
             $(document).ready(function() {
-                    var newVal
+                    var newVal = 1
                     $(".button").on("click", function() {
                     var $button = $(this);
                     var $parent = $button.parent(); 
-                    var oldValue = $parent.find('.input').val();
-                    
+                    var oldValue = $parent.find('.input').val()
                     if ($button.text() == "+") {
                         newVal = parseFloat(oldValue) + 1;
                         } else {
@@ -85,13 +82,21 @@
                         var button = $(this)
                         var parent = button.parent()
                         var item_id = parent.find('.itemid').val();
+                        var value = parent.find('.input').val()
+                        // console.log(value.val())
+                        var csrf_token = '{{ csrf_token }}';
                         $.ajax({
                             url : '/addcart' , 
-                            method : 'GET' ,
-                             data : {'item_id':item_id ,'quantity':newVal},
+                            type : 'post' ,
+                            beforeSend: function(xhr) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                                },
+                            data : {'item_id':parseInt(item_id) ,'quantity':newVal},
                             dataType : 'json' , 
                             success: function(result){
-    
+                                
+                                value=result['item_quantity']
+                                $(this).val=value;
                          }
                         })
                     })
