@@ -150,3 +150,11 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 #AUTHENTICATION_BACKENDS = ["Home.backend.CustomUserModelBackend"]
+
+if DEBUG:
+    STRIPE_PUBLISHABLE_KEY = 'pk_test_51O5pRNSH9KV72lFHlaG3fvrfhHeca2rQ4vLDczOgsYrZXR0IU7lRND3WS62OYHjcD2l6PXaWqh1mUaPD9IKXJRn100Wr9nERa1'
+    STRIPE_SECRET_KEY = 'sk_test_51O5pRNSH9KV72lFHrOtG5ExyQ0Y3I1JjH0u5FKBszlaXG2isvZ1p1tjjHpUV8a5YsOmzDqDq5PhP1sEJEHiAyOVp00I1Xkz3wc'
+# Uncomment these lines if you have a live keys
+# else:
+#     STRIPE_PUBLISHABLE_KEY = 'production_publishable_key'
+#     STRIPE_SECRET_KEY = 'production_secret_key'

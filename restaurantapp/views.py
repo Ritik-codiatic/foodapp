@@ -1,13 +1,16 @@
 # django imp
-
-from django.shortcuts import render,redirect
+from django.http.response import HttpResponseNotFound, JsonResponse
+from django.urls import reverse, reverse_lazy
+from .models import *
+from django.views.generic import ListView, CreateView, DetailView, TemplateView
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import auth,messages
 from django.views.generic import View
-from django.views.generic.list import ListView
-from django.http import JsonResponse,HttpResponseRedirect
+from django.http import JsonResponse,HttpResponseRedirect,QueryDict
 from django.urls import reverse
-from django.db.models import Q
-from django.db.models import Sum
+from django.db.models import Q,Subquery
 # local imp
 
 from .models import *
@@ -15,6 +18,8 @@ from .forms import *
 
 # lib imp
 from geopy.geocoders import Nominatim
+import stripe
+import json
 # Create your views here.
 
 class HomeView(View):
@@ -53,6 +58,9 @@ class ItemView(View):
         menucategory = MenuCategory.objects.get(id = category_id)
         restaurant = Restaurant.objects.get(id = restaurant_id)      
         items = Menu.objects.filter(restaurant=restaurant,item__menu_category = menucategory)
+        # .annotate(quantity=Subquery(
+        # CartItem.objects.filter(
+        #     cart_item__restaurant=restaurant,cart_item__item__menu_category=menucategory)))
         return render(request, self.template_name, context = {'items':items,'menucategory':menucategory,'restaurant':restaurant})
 
 class EditItemView(View):
@@ -139,21 +147,6 @@ class GetAddress(View):
         
         return JsonResponse({'address':address})
     
-
-class UpdateItem(View):
-    '''view for updating restaurant item by owner'''
-
-    template_name = 'addmenuitem.html'
-    def get(self, request, *args, **kwargs):
-        category_id = kwargs['category_id']
-        restaurant_id = kwargs['restaurant_id']
-        menucategory = MenuCategory.objects.get(id = category_id)
-        restaurant = Restaurant.objects.get(id = restaurant_id)
-        items = []
-        for item in restaurant.menu_set.all():
-            if item.item.menu_category.id == menucategory.id:
-                items.append(item.item)
-        return render(request, self.template_name, context={'items':items,'restaurant':restaurant})
     
 class AddItems(View):
     '''add items by owner'''
@@ -194,7 +187,7 @@ class AddCartView(View):
     template_name = 'restaurant/cart.html'
     def get(self, request, *args, **kwargs):
         cart ,_= Cart.objects.get_or_create(user=request.user)
-        cart_items = CartItem.objects.filter(cart=cart.id)
+        cart_items = CartItem.objects.filter(cart=cart.id).order_by('cart_item__item__name')
       #  total_price = cart_items.aggregate(total = Sum('cart_item__price'))
         return render(request, self.template_name, {'cart_item':cart_items})
                                                     #'total_price':total_price['total']})
@@ -210,7 +203,14 @@ class AddCartView(View):
         cartitem.save()
 
         return JsonResponse({'item_quantity':item_quantity})
-  
+    
+    def delete(self, request, *args, **kwargs):
+        delete = QueryDict(request.body)
+        item_id = delete.get('remove_item_id')
+        item = Menu.objects.get(id = item_id)
+        cart = Cart.objects.get(user = request.user)
+        cartitem = CartItem.objects.get(cart_item=item, cart=cart).delete()
+        return JsonResponse({})
     
 class EditRestaurant(View):
     '''view for editing restaurant'''
@@ -262,3 +262,17 @@ class ImageGallery(View):
     def delete(self, request, restaurant_id, *args, **kwargs):
         RestaurantImage.objects.get(id = restaurant_id).delete()
         return JsonResponse({})
+    
+@csrf_exempt
+def create_checkout_session(request, id):
+	pass
+
+
+class PaymentSuccessView(TemplateView):
+    pass
+
+class PaymentFailedView(TemplateView):
+    pass
+
+class OrderHistoryListView(ListView):
+    pass

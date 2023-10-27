@@ -5,6 +5,7 @@
 {% block content %}
     {% if cart_item %}
         {% for item in cart_item %}
+        <input type="hidden" value="{{item.cart_item.restaurant.id}}" id="restaurant_id">
         <div class="item_div">
             <input type="hidden" class="item_quantity" value="{{item.quantity}}"> 
         {{item.cart_item.item.name}} <br>
@@ -12,29 +13,60 @@
         <img src="{{item.cart_item.image.url}}" alt="noimage" width="100px" height="100px"> <br>
         Quantity :<div class="row">
             <div class="col-md-4" id="product-1">
-                <input type="hidden" name="item_id" value="{{item.id}}" class="itemid">
+                <input type="hidden" name="item_id" value="{{item.cart_item.id}}" class="itemid">
                 <input type="number" class="input"  value="{{item.quantity}}" min="1" />
             <button class="button">+</button>
             <button class="button">-</button>
                 </div>
         </div>
         <input type="hidden" class="item_price" value="{{item.cart_item.price}}">  
-        <p>Price :{{item.cart_item.price}} <h5 class="item_price">{% widthratio item.quantity 1 item.cart_item.price %}</h5></p>
+        <p style="float: left;"> Price : </p><h5 class="quantity_price" > {% widthratio item.quantity 1 item.cart_item.price %}</h5>
         <hr>
         </div>
-        {% endfor %}   
-    <h1>Total price</h1>
-    <h3 id="total_price"></h2>
+        {% endfor %}  
+        <div>
+            <button class="btn btn-black more-items">Add More Items <i class="fa fa-cart-plus" aria-hidden="true"></i></button>
+        </div>
+        <hr>
+        <div>
+            <center>
+            <h1>Bill Summary</h1>
+            <span class="a">Sub Total :</span>
+            <span id="total_price" class="b"></span><br>
+            <span class="a">Gst :</span>
+            <span id="gst_price"></span><br>
+            <span class="a">Grand Total</span>
+            <span id="grand_total"></span>
+            </center>
+        </div> 
     {% else %}
     Empty cart
     {% endif %}
+    <style>
+        span.a {
+            font-weight: bold;
+        }
+    </style>
     <script>
+        let item_price = document.getElementsByClassName("quantity_price")
+        let total = 0
+        for(let i=0; i < item_price.length ; i++){
+            total = total + parseInt(item_price[i].innerText)
+        }
+        document.getElementById("total_price").innerHTML=total;
+        let gst_price = total * 18/100;
+        document.getElementById("gst_price").innerHTML=gst_price;
+        let grand_total = total + gst_price
+        document.getElementById("grand_total").innerHTML=grand_total;
+
             $(document).ready(function(){
                 var newVal = 1
                     $(".button").on("click", function() {
                     var $button = $(this);
                     var $parent = $button.parent(); 
                     var oldValue = $parent.find('.input').val();
+                    var item_id = $parent.find('.itemid').val();
+                    console.log(item_id)
                     if ($button.text() == "+") {
                         newVal = parseFloat(oldValue) + 1;
                         } else {
@@ -46,25 +78,27 @@
                         }
                         }
                         $parent.find('.input').val(newVal);
-                        
+                        var csrf_token = '{{ csrf_token }}';
+                        $.ajax({
+                            url : '/addcart' , 
+                            type : 'post' ,
+                            beforeSend: function(xhr) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                                },
+                            data : {'item_id': item_id ,'quantity':newVal},
+                            dataType : 'json' , 
+                            success: function(result){
+                               window.location.reload()
+                         }
+                        })
                     });
+                    $(".more-items").click(function(){
+                        let id = $("#restaurant_id").val()
+                        window.location.href="/"+id
+                    })
+                   
             })
                    
-        // $(document).ready(function(){
-            // var current = $(".item_div")
-            // var currentdiv = $(this)
-            // var quantity =  currentdiv.find(".item_quantity").val()
-        //     // console.log(quantity)
-        //     $(".item_div").ready(function(){
-        //         var current = $(this)
-        //         var children = current.children()
-        //         var quantity =  children.find(".item_quantity").val()
-        //         var price = children.find(".item_price").val()
-        //         var total = quantity * price
-        //         console.log(price)
-        //         console.log(quantity)
-        //         $(".item_price").text(total)
-        //     })           
-        // })
+        
     </script>
 {% endblock %}

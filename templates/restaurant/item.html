@@ -1,5 +1,5 @@
-
 {% extends 'user/base.html' %}
+{% load item_quantity %}
 {% block item %}
 <a href="/additem/{{restaurant.id}}">Add Items</a>
 {% endblock %}
@@ -18,7 +18,7 @@
                         xhr.setRequestHeader("X-CSRFToken", csrf_token); 
                         },
                         success : function(result){
-                        window.location.reload()
+                            window.location.reload()
                         },
             })
         })
@@ -41,9 +41,15 @@
                     <button class="button">+</button>
                     <button class="button">-</button>
                     <input type="hidden" name="item_id" value="{{item.id}}" class="itemid">
-                        <input type="number" class="input"  value="1" min="1" />
+                        <input type="number" class="input"  value="{% item_quantity item.id request.user.id %}" min="1" />
                         <button type="button" class="btn btn-primary btn-sm cartbutton" >
                             Add to Cart<i class="fa fa-cart-plus" style="font-size: 1.73em;" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" class="btn btn-green btn-sm update-button" >
+                            Update Cart<i class="fa fa-cart-arrow-down" style="font-size: 1.73em;" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" class="btn btn-red btn-sm remove-button" >
+                            Remove<i class="fa fa-close"  style="font-size: 1.73em;" aria-hidden="true"></i>
                           </button>
                         </div>
                 </div>
@@ -60,6 +66,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
          <script>
             $(document).ready(function() {
+                    $(".update-button").hide()
+                    $(".remove-button").hide()
                     var newVal = 1
                     $(".button").on("click", function() {
                     var $button = $(this);
@@ -78,7 +86,7 @@
                         $parent.find('.input').val(newVal);
                         
                     });
-                    $(".cartbutton").click(function(){
+                    $(".cartbutton , .update-button").click(function(){
                         var button = $(this)
                         var parent = button.parent()
                         var item_id = parent.find('.itemid').val();
@@ -94,10 +102,30 @@
                             data : {'item_id':parseInt(item_id) ,'quantity':newVal},
                             dataType : 'json' , 
                             success: function(result){
-                                
-                                value=result['item_quantity']
-                                $(this).val=value;
+                                parent.find(".cartbutton").hide()
+                                parent.find(".update-button").show()
+                                parent.find(".remove-button").show()
+                                // value=result['item_quantity']
+                                // $(this).val=value;
                          }
+                        })
+                    })
+                    $(".remove-button").click(function(){
+                        var remove_button = $(this);
+                        var remove_parent = remove_button.parent();
+                        var remove_item_id = remove_parent.find('.itemid').val();
+                        var csrf_token = '{{ csrf_token }}';
+                        $.ajax({
+                            url : '/addcart',
+                            type : 'DELETE',
+                            beforeSend: function(xhr) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                            },
+                            data : {'remove_item_id':remove_item_id},
+                            dataType : 'json',
+                            success : function(){
+
+                            }
                         })
                     })
                     });
