@@ -186,17 +186,18 @@ class AddCartView(View):
 
     template_name = 'restaurant/cart.html'
     def get(self, request, *args, **kwargs):
-        cart ,_= Cart.objects.get_or_create(user=request.user)
-        cart_items = CartItem.objects.filter(cart=cart.id).order_by('cart_item__item__name')
+        cart ,_= Cart.objects.get_or_create(user=request.user,is_paid = False)
+        cart_items = CartItem.objects.filter(cart=cart).order_by('cart_item__item__name')
+        stripe_publishable_key = settings.STRIPE_PUBLISHABLE_KEY
       #  total_price = cart_items.aggregate(total = Sum('cart_item__price'))
-        return render(request, self.template_name, {'cart_item':cart_items})
+        return render(request, self.template_name, {'cart_item':cart_items,'stripe_publishable_key':stripe_publishable_key})
                                                     #'total_price':total_price['total']})
 
     def post(self, request, *args, **kwargs):
         item_id = request.POST.get('item_id')
         item_quantity = request.POST.get('quantity') 
         item = Menu.objects.get(id = item_id)
-        cart ,_= Cart.objects.get_or_create(user = request.user)
+        cart ,_= Cart.objects.get_or_create(user = request.user,is_paid = False)
         cart.save()
         cartitem ,_= CartItem.objects.get_or_create(cart_item=item, cart=cart)
         cartitem.quantity = item_quantity
@@ -208,7 +209,7 @@ class AddCartView(View):
         delete = QueryDict(request.body)
         item_id = delete.get('remove_item_id')
         item = Menu.objects.get(id = item_id)
-        cart = Cart.objects.get(user = request.user)
+        cart = Cart.objects.get(user = request.user,is_paid= False)
         cartitem = CartItem.objects.get(cart_item=item, cart=cart).delete()
         return JsonResponse({})
     
@@ -265,14 +266,67 @@ class ImageGallery(View):
     
 @csrf_exempt
 def create_checkout_session(request, id):
-	pass
+
+    request_data = json.loads(request.body)
+    cart = get_object_or_404(Cart, pk=id)
+    total_price = request_data['grand_total']
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    checkout_session = stripe.checkout.Session.create(
+        # Customer Email is optional,
+        # It is not safe to accept email directly from the client side
+        payment_method_types=['card'],
+        line_items=[
+            {
+                'price_data': {
+                    'currency': 'inr',
+                    'product_data': {
+                    'name': cart.user.email,
+                    },
+                    'unit_amount': int(total_price*100),
+                },
+                'quantity': 1,
+            }
+        ],
+        mode='payment',
+        success_url=request.build_absolute_uri(
+            reverse('success')
+        ) + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri(reverse('failed')),
+    )
+    order = OrderDetail()
+    order.user = request.user
+    order.cart = cart
+    order.stripe_payment_intent = checkout_session.id
+    order.amount = int(total_price)
+    order.save()
+
+    # return JsonResponse({'data': checkout_session})
+    return JsonResponse({'sessionId': checkout_session.id})
 
 
 class PaymentSuccessView(TemplateView):
-    pass
+    template_name = "payments/payment_success.html"
 
+    def get(self, request, *args, **kwargs):
+        session_id = request.GET.get('session_id')
+        if session_id is None:
+            return HttpResponseNotFound()
+        
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        session = stripe.checkout.Session.retrieve(session_id)
+
+        order = get_object_or_404(OrderDetail, stripe_payment_intent=session_id)
+        order.has_paid = True
+        order.save()
+        cart = order.cart
+        cart.is_paid = True
+        cart.save()
+        return render(request, self.template_name)
+    
 class PaymentFailedView(TemplateView):
-    pass
+    template_name = "payments/payment_failed.html"
 
 class OrderHistoryListView(ListView):
-    pass
+    '''view for showing user order history'''
+
+    

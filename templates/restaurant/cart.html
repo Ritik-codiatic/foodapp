@@ -5,6 +5,7 @@
 {% block content %}
     {% if cart_item %}
         {% for item in cart_item %}
+        <input type="hidden" name="cart_id" id="cart_id" value="{{item.cart.id}}">
         <input type="hidden" value="{{item.cart_item.restaurant.id}}" id="restaurant_id">
         <div class="item_div">
             <input type="hidden" class="item_quantity" value="{{item.quantity}}"> 
@@ -17,7 +18,11 @@
                 <input type="number" class="input"  value="{{item.quantity}}" min="1" />
             <button class="button">+</button>
             <button class="button">-</button>
+            <button type="button" class="btn btn-red btn-sm remove-button" >
+                Remove<i class="fa fa-close"  style="font-size: 1.73em;" aria-hidden="true"></i>
+              </button>
                 </div>
+                
         </div>
         <input type="hidden" class="item_price" value="{{item.cart_item.price}}">  
         <p style="float: left;"> Price : </p><h5 class="quantity_price" > {% widthratio item.quantity 1 item.cart_item.price %}</h5>
@@ -39,6 +44,11 @@
             <span id="grand_total"></span>
             </center>
         </div> 
+        <div>
+            <center>
+                <button class="btn btn-success ml-auto" id="checkout-button">Order Now</button>
+            </center>
+        </div>
     {% else %}
     Empty cart
     {% endif %}
@@ -47,6 +57,10 @@
             font-weight: bold;
         }
     </style>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script type="text/javascript">
+        
+    </script>
     <script>
         let item_price = document.getElementsByClassName("quantity_price")
         let total = 0
@@ -58,6 +72,39 @@
         document.getElementById("gst_price").innerHTML=gst_price;
         let grand_total = total + gst_price
         document.getElementById("grand_total").innerHTML=grand_total;
+                    
+        // Create an instance of the Stripe object with your publishable API key
+        var stripe = Stripe('{{ stripe_publishable_key }}');
+        var checkoutButton = document.getElementById('checkout-button');
+        var cart_id = document.getElementById('cart_id').value
+        checkoutButton.addEventListener('click', function () {
+    
+            // Create a new Checkout Session using the server-side endpoint you
+            // created in step 3.
+            fetch("api/checkout-session/"+cart_id+"/", {
+                method: 'POST',
+                body: JSON.stringify(
+                    { grand_total: grand_total }
+                )
+            })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (session) {
+                    return stripe.redirectToCheckout({ sessionId: session.sessionId });
+                })
+                .then(function (result) {
+                    // If `redirectToCheckout` fails due to a browser or network
+                    // error, you should display the localized error message to your
+                    // customer using `error.message`.
+                    if (result.error) {
+                        alert(result.error.message);
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                });
+        });
 
             $(document).ready(function(){
                 var newVal = 1
@@ -95,6 +142,24 @@
                     $(".more-items").click(function(){
                         let id = $("#restaurant_id").val()
                         window.location.href="/"+id
+                    })
+                    $(".remove-button").click(function(){
+                        var remove_button = $(this);
+                        var remove_parent = remove_button.parent();
+                        var remove_item_id = remove_parent.find('.itemid').val();
+                        var csrf_token = '{{ csrf_token }}';
+                        $.ajax({
+                            url : '/addcart',
+                            type : 'DELETE',
+                            beforeSend: function(xhr) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                            },
+                            data : {'remove_item_id':remove_item_id},
+                            dataType : 'json',
+                            success : function(){
+                                window.location.reload()
+                            }
+                        })
                     })
                    
             })

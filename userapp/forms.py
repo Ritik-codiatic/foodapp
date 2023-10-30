@@ -37,3 +37,7 @@ class LoginForm(ModelForm):
     def clean(self) :
         pass
 
+class UserForm(ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['email','first_name','last_name','mobile_number','profile_pic','gender','address']

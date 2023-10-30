@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'location_field.apps.DefaultConfig',
     # 'crispy_forms'
     'crispy_forms',
+    'crispy_bootstrap4',
     #from geopy.geocoders import Nominatim
     'geopy'
 ]
@@ -158,3 +159,7 @@ if DEBUG:
 # else:
 #     STRIPE_PUBLISHABLE_KEY = 'production_publishable_key'
 #     STRIPE_SECRET_KEY = 'production_secret_key'
+
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

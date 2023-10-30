@@ -69,3 +69,19 @@ class OwnerView(View):
         return render(request, self.template_name, {'restaurants' : restaurant})
  
 
+class UserProfileView(View):
+    '''view for showing user profile'''
+
+    template_name = 'user/user_profile.html'
+    form_class = UserForm
+    def get(self, request, *args, **kwargs):
+        user = CustomUser.objects.get(id = request.user.id)
+        user_form = self.form_class(instance=user)
+        return render(request, self.template_name, context={'user_form':user_form})
+    
+    def post(self, request, *args, **kwargs):
+        user_form = self.form_class(request.POST,request.FILES)
+        if user_form.is_valid():
+            user_form.save()
+            return redirect('/')
+

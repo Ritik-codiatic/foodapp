@@ -73,7 +73,7 @@ class Common(models.Model):  # COMM0N
     class Meta: 
         abstract = True
 class Cart(Common,models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
     order_date = models.DateField(null=True)
     payment_type = models.CharField(max_length=100, null=True)
@@ -83,7 +83,31 @@ class CartItem(Common,models.Model):
     cart_item = models.ForeignKey(Menu, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-  
+
+class OrderDetail(models.Model):
+
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+
+    cart = models.ForeignKey(
+        to=Cart,
+        verbose_name='Cart',
+        on_delete=models.PROTECT
+    )
+
+    amount = models.IntegerField(
+        verbose_name='Amount'
+    )
+
+    stripe_payment_intent = models.CharField(
+        max_length=200,null=True
+    )
+
+    # This field can be changed as status
+    has_paid = models.BooleanField(
+        default=False,
+        verbose_name='Payment Status'
+    )
+
   
 # def get_menu_category():
 #     res = RestaurantMenu.objects.first()

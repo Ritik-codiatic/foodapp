@@ -1,9 +1,10 @@
 from django.urls import path
 # local imp
-from .views import HomeView, RestaurantView, ItemView, AddRestaurantView,RestaurantHome, AddMenuCategory, GetAddress, AddItems, Search, AddCartView, EditRestaurant, ImageGallery, EditItemView
+from .views import HomeView, RestaurantView, ItemView, AddRestaurantView,RestaurantHome, AddMenuCategory, GetAddress, AddItems, Search, AddCartView, EditRestaurant, ImageGallery, EditItemView, PaymentSuccessView, PaymentFailedView, OrderHistoryListView,create_checkout_session
+
 
 urlpatterns = [
-    path('',HomeView.as_view()),
+    path('',HomeView.as_view(),name='home'),
     path('<int:restaurant_id>/', RestaurantView.as_view()),
     path('items/<int:restaurant_id>/<int:category_id>', ItemView.as_view()),
     path('addrestaurant', AddRestaurantView.as_view()),
@@ -15,5 +16,9 @@ urlpatterns = [
     path('addcart',AddCartView.as_view()),
     path('editrestaurant/<int:restaurant_id>',EditRestaurant.as_view()),
     path('image-gallery/<int:restaurant_id>',ImageGallery.as_view()),
-    path('edit-item/<int:item_id>',EditItemView.as_view())
+    path('edit-item/<int:item_id>',EditItemView.as_view()),
+    path('success/', PaymentSuccessView.as_view(), name='success'),
+    path('failed/', PaymentFailedView.as_view(), name='failed'),
+    path('history/', OrderHistoryListView.as_view(), name='history'),
+    path('api/checkout-session/<int:id>/', create_checkout_session, name='api_checkout_session'),
  ] 
