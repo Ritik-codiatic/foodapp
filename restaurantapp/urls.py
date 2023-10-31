@@ -1,7 +1,6 @@
 from django.urls import path
 # local imp
-from .views import HomeView, RestaurantView, ItemView, AddRestaurantView,RestaurantHome, AddMenuCategory, GetAddress, AddItems, Search, AddCartView, EditRestaurant, ImageGallery, EditItemView, PaymentSuccessView, PaymentFailedView, OrderHistoryListView,create_checkout_session
-
+from .views import *
 
 urlpatterns = [
     path('',HomeView.as_view(),name='home'),
@@ -21,4 +20,6 @@ urlpatterns = [
     path('failed/', PaymentFailedView.as_view(), name='failed'),
     path('history/', OrderHistoryListView.as_view(), name='history'),
     path('api/checkout-session/<int:id>/', create_checkout_session, name='api_checkout_session'),
+    path('order', OrderHistoryListView.as_view(), name="orders"),
+    path('feedback/<int:pk>',RatingReviewView.as_view(),name='feedback')
  ] 

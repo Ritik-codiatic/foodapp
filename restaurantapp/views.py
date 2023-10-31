@@ -1,4 +1,6 @@
 # django imp
+from typing import Any
+from django.db.models.query import QuerySet
 from django.http.response import HttpResponseNotFound, JsonResponse
 from django.urls import reverse, reverse_lazy
 from .models import *
@@ -297,7 +299,7 @@ def create_checkout_session(request, id):
     order.user = request.user
     order.cart = cart
     order.stripe_payment_intent = checkout_session.id
-    order.amount = int(total_price)
+    order.amount = total_price
     order.save()
 
     # return JsonResponse({'data': checkout_session})
@@ -329,4 +331,21 @@ class PaymentFailedView(TemplateView):
 class OrderHistoryListView(ListView):
     '''view for showing user order history'''
 
+    context_object_name = 'order_list'
+    template_name = 'payments/order_history.html'
     
+    def get_queryset(self):
+        return OrderDetail.objects.filter(user = self.request.user)
+
+class RatingReviewView(DetailView):
+    '''view for rating of a restaurant'''
+
+    template_name = 'restaurant/feedback.html'
+    model = Menu
+    context_object_name = 'menu_item'
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     rating = self.request.GET.get['']
+    #     context['rating'] = None
+    #     return 

@@ -1,0 +1,22 @@
+{% extends 'user/base.html' %}
+{% block content %}
+<center>
+{% if order_list %}
+{% for order in order_list %}
+    {% if order.has_paid %}
+    <p>Order Successfull !</p>
+    {% else %}
+    <p>Order failed</p>
+    {% endif %}
+    <p>You paid Rs :{{order.amount}}</p>
+    {% for item in order.cart.cartitem_set.all %}
+    <p>{{item.cart_item.item.name}} ({{item.quantity}})  <a href="{% url 'feedback' item.cart_item.id %}">Rate</a></p>
+    {% endfor %}
+    <p>Order Date : {{order.updated_at}}</p>
+    <hr>
+{% endfor %}
+{% else %}
+<p>No orders yet!!</p>
+{% endif %}
+</center>
+{% endblock content %}

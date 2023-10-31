@@ -84,7 +84,7 @@ class CartItem(Common,models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
 
-class OrderDetail(models.Model):
+class OrderDetail(Common,models.Model):
 
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
 
@@ -94,7 +94,7 @@ class OrderDetail(models.Model):
         on_delete=models.PROTECT
     )
 
-    amount = models.IntegerField(
+    amount = models.FloatField(
         verbose_name='Amount'
     )
 
@@ -108,7 +108,20 @@ class OrderDetail(models.Model):
         verbose_name='Payment Status'
     )
 
-  
+
+class AbstractRating(Common,models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(Restaurant,on_delete=models.CASCADE)
+
+    class Meta:
+        abstract =True
+
+class RestaurantRating(Common,models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(Restaurant,on_delete=models.CASCADE)
+    rating = models.IntegerField(default=0)
+    comment = models.TextField(max_length=100,null=True)
+
 # def get_menu_category():
 #     res = RestaurantMenu.objects.first()
 #     manu_category = MenuCategory.objects.create(res.id, "default menu category")

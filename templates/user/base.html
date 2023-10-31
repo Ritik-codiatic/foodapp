@@ -45,7 +45,7 @@
 					{% endblock %}
 				{% endif %}
 				<a href="/addcart">Cart</a>
-				<a href="/order">Orders</a>
+				<a href="{% url 'orders' %}">Orders</a>
 				<a href="/user/user-profile">Your Profile</a>
 				<a href="/user/logout">Logout</a>
             {% else %}

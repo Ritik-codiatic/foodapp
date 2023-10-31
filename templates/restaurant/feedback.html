@@ -1,0 +1,39 @@
+{% extends 'user/base.html' %}
+{% block content %}
+
+<style>
+    .checked {
+      color: orange;
+    }
+</style>
+<div>
+    {{menu_item.restaurant.name}}
+</div>
+<div>
+    <span class="fa fa-star"><input type="hidden" class="star" value="1"></span>
+    <span class="fa fa-star"><input type="hidden" class="star" value="2"></span>
+    <span class="fa fa-star"><input type="hidden" class="star" value="3"></span>
+    <span class="fa fa-star"><input type="hidden" class="star" value="4"></span>
+    <span class="fa fa-star"><input type="hidden" class="star" value="5"></span>
+</div>
+<script>
+    $(document).ready(function(){
+        $('span').click(function(){
+            var current = $(this).addClass("checked")
+            var value = current.children().val()
+            console.log(value)
+            $.ajax({
+                url : "{% url 'feedback' menu_item.id %}",
+                type : 'get',
+                data : {'rating':value},
+                dataType : 'json',
+                success : function(result){
+
+                }
+            })
+
+        })
+    })
+</script>
+
+{% endblock content %}
