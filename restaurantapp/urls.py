@@ -21,5 +21,5 @@ urlpatterns = [
     path('history/', OrderHistoryListView.as_view(), name='history'),
     path('api/checkout-session/<int:id>/', create_checkout_session, name='api_checkout_session'),
     path('order', OrderHistoryListView.as_view(), name="orders"),
-    path('feedback/<int:pk>',RatingReviewView.as_view(),name='feedback')
+    path('feedback/<int:restaurant_id>/<int:order_id>',RatingReviewView.as_view(),name='feedback'),
  ] 

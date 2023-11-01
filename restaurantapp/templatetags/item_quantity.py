@@ -9,5 +9,5 @@ def item_quantity(item_id, user_id, *args, **kwargs):
             cart_item = CartItem.objects.get(cart_item__id = item_id, cart__user__id = user_id,cart__is_paid = False)
             return cart_item.quantity
         except:
-              return 1
+              return 0
         

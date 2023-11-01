@@ -336,13 +336,23 @@ class OrderHistoryListView(ListView):
     
     def get_queryset(self):
         return OrderDetail.objects.filter(user = self.request.user)
-
-class RatingReviewView(DetailView):
-    '''view for rating of a restaurant'''
+class RatingReviewView(View):
+    '''view for rating restaurant'''
 
     template_name = 'restaurant/feedback.html'
-    model = Menu
-    context_object_name = 'menu_item'
+    def get(self, request, *args, **kwargs):
+        restaurant_id = kwargs['restaurant_id']
+        order_id = kwargs['order_id']
+        restaurant = Restaurant.objects.get(id = restaurant_id)
+        order = OrderDetail.objects.get(id = order_id)
+        return render(request, self.template_name, context={'restaurant':restaurant, 'order':order})
+
+# class RatingReviewView(DetailView):
+#     '''view for rating of a restaurant'''
+
+#     template_name = 'restaurant/feedback.html'
+#     model = Menu
+#     context_object_name = 'menu_item'
 
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)

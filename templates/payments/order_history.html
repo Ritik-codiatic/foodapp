@@ -1,5 +1,13 @@
 {% extends 'user/base.html' %}
 {% block content %}
+<style>
+    .checked {
+      color: orange;
+    }
+    p{
+        margin-bottom: auto;
+    }
+</style>
 <center>
 {% if order_list %}
 {% for order in order_list %}
@@ -8,15 +16,33 @@
     {% else %}
     <p>Order failed</p>
     {% endif %}
-    <p>You paid Rs :{{order.amount}}</p>
+    <p>Total Amount Rs :{{order.amount}}</p>
     {% for item in order.cart.cartitem_set.all %}
-    <p>{{item.cart_item.item.name}} ({{item.quantity}})  <a href="{% url 'feedback' item.cart_item.id %}">Rate</a></p>
+    <div>
+    <p>{{item.cart_item.item.name}} ({{item.quantity}}) </p>
+    <p style="display: inline-block;">From : {{item.cart_item.restaurant.name}}</p>
+    <input type="hidden" value="{{item.cart_item.restaurant.id}}" class="restaurant_id">
+    <input type="hidden" value="{{order.id}}" class="order_id">
+    <button class="feedback">Give FeedBack</button> 
     {% endfor %}
+    <div>
     <p>Order Date : {{order.updated_at}}</p>
     <hr>
+    </div>
 {% endfor %}
 {% else %}
 <p>No orders yet!!</p>
 {% endif %}
 </center>
+<script>
+    $(document).ready(function(){
+        $(".feedback").click(function(){
+            var current = $(this)
+            var parent = current.parent()
+            var restaurant_id = parent.find('.restaurant_id').val()
+            var order_id = parent.find('.order_id').val()
+            window.location.href = "/feedback/"+restaurant_id+"/"+order_id;
+        })
+    })
+</script>
 {% endblock content %}

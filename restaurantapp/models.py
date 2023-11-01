@@ -72,19 +72,19 @@ class Common(models.Model):  # COMM0N
     updated_at = models.DateTimeField(auto_now=True)
     class Meta: 
         abstract = True
-class Cart(Common,models.Model):
+class Cart(Common):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False)
     order_date = models.DateField(null=True)
     payment_type = models.CharField(max_length=100, null=True)
     payment_id = models.CharField(max_length=100, null=True)
     
-class CartItem(Common,models.Model):
+class CartItem(Common):
     cart_item = models.ForeignKey(Menu, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
 
-class OrderDetail(Common,models.Model):
+class OrderDetail(Common):
 
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
 
@@ -109,16 +109,10 @@ class OrderDetail(Common,models.Model):
     )
 
 
-class AbstractRating(Common,models.Model):
+class RestaurantRating(Common):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant,on_delete=models.CASCADE)
-
-    class Meta:
-        abstract =True
-
-class RestaurantRating(Common,models.Model):
-    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
-    restaurant = models.ForeignKey(Restaurant,on_delete=models.CASCADE)
+    # order = models.ForeignKey(OrderDetail,on_delete=models.CASCADE)
     rating = models.IntegerField(default=0)
     comment = models.TextField(max_length=100,null=True)
 
