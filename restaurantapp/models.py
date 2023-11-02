@@ -1,10 +1,18 @@
 # django imp
 from django.db import models
 from userapp.models import CustomUser
-
+from django.db.models import Avg,F, Func,FloatField
 # libs imp
 from location_field.models.plain import PlainLocationField
 from datetime import datetime
+class Round(Func):
+    function = 'ROUND'
+    arity = 2
+    # Only works as the arity is 2
+    arg_joiner = '::numeric, '
+
+    def as_sqlite(self, compiler, connection, **extra_context):
+        return super().as_sqlite(compiler, connection, arg_joiner=", ", **extra_context)
 
 class Restaurant(models.Model):
     RESTAURANT_TYPES = (('veg','veg'),
@@ -20,6 +28,9 @@ class Restaurant(models.Model):
     location = PlainLocationField(based_fields=['city'], zoom=7,null = True)
     created_at = models.DateTimeField(auto_now_add=True ,null=True)
     updated_at = models.DateTimeField(auto_now=True , null=True)
+
+    def average_rating(self) -> float:
+        return RestaurantRating.objects.filter(restaurant=self).aggregate(Avg("rating"))["rating__avg"] or 0
 
     def __str__(self) -> str:
         return self.name
@@ -112,7 +123,7 @@ class OrderDetail(Common):
 class RestaurantRating(Common):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant,on_delete=models.CASCADE)
-    # order = models.ForeignKey(OrderDetail,on_delete=models.CASCADE)
+    order = models.ForeignKey(OrderDetail,on_delete=models.CASCADE)
     rating = models.IntegerField(default=0)
     comment = models.TextField(max_length=100,null=True)
 

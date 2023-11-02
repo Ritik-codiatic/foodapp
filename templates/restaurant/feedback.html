@@ -43,30 +43,66 @@
     {% for item in order.cart.cartitem_set.all %}
     {% if item.cart_item.restaurant.id == restaurant.id %}
         <p>{{item.cart_item.item.name}} ({{item.quantity}})</p>
-
     {% endif %}
     {% endfor %}
-        <form action="" method="post">
-            {% csrf_token %}
         <div class="rate" >
-        <input type="radio" id="star5" name="rate" value="5" />
+        <input type="radio" id="star5" class="star" name="rate" value="5" />
         <label for="star5" title="text">5 stars</label>
-        <input type="radio" id="star4" name="rate" value="4" />
+        <input type="radio" id="star4" class="star" name="rate" value="4" />
         <label for="star4" title="text">4 stars</label>
-        <input type="radio" id="star3" name="rate" value="3" />
+        <input type="radio" id="star3" class="star" name="rate" value="3" />
         <label for="star3" title="text">3 stars</label>
-        <input type="radio" id="star2" name="rate" value="2" />
+        <input type="radio" id="star2" class="star" name="rate" value="2" />
         <label for="star2" title="text">2 stars</label>
-        <input type="radio" id="star1" name="rate" value="1" />
+        <input type="radio" id="star1" class="star" name="rate" value="1" />
         <label for="star1" title="text">1 star</label>
         </div>
-        <textarea name="" id="" cols="30" rows="3"></textarea>
-        <input type="submit" value="post">
-        </form>
+        <textarea name="comment" id="comment" cols="30" rows="3"></textarea>
+        <input type="submit" value="post" id="post">
 
 </div>
 
 <script>
+    $(document).ready(function(){
+        let order_id = "{{order.id}}"
+        let restaurant_id = "{{restaurant.id}}"
+        var value = 0
+        var csrf_token = '{{ csrf_token }}';
+        $(".star").click(function(){
+            value = $(this).val()
+            
+        })
+        $("#post").click(function(){
+            let comment = document.getElementById("comment").value
+            
+            if (value == 0){
+                Swal.fire("atleast give 1 Star")
+            }
+            else(
+            Swal.fire({
+                        title: 'Thanks For reviewing !!!',
+                        confirmButtonText: 'Ok',
+            }).then((result) =>{
+                if (result.isConfirmed){
+                    $.ajax({
+                            // url : `/feedback/${restaurant_id}/${order_id}/`,
+                            url : "{% url 'feedback' restaurant.id order.id %}",
+                            type : 'post',
+                            data : {'rating':value,'comment':comment},
+                            beforeSend: function(xhr) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                                },
+                            dataType : 'json',
+                            success : function(result){
+                                window.location.href="/order"
+                            }
+                        })
+                }
+            })
+            )
+        })
+    })
+
     // $(document).ready(function(){
     //     $('span').click(function(){
     //         var current = $(this).addClass("checked")

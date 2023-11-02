@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .models import CustomUser
 class UserForm(UserCreationForm):
-    # confirm_password = forms.CharField(widget=forms.PasswordInput)
+    #confirm_password = forms.CharField(widget=forms.PasswordInput)
     
     class Meta:
         model = CustomUser

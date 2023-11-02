@@ -28,9 +28,19 @@ class HomeView(View):
     '''view for rendering main page'''
 
     template_name = 'user/home.html'
-    model = Restaurant.objects.all()
+    
     def get(self, request, *args, **kwargs):
-      return render(request, self.template_name, {'restaurant_list':self.model})
+        
+        try:
+            if request.user.user_type != "Customer" :
+                model = Restaurant.objects.filter(owner = request.user).all()
+        except:
+            model = Restaurant.objects.all()
+            
+        if request.GET.get('search'):
+            restaurant = request.GET.get('search', '').strip()
+            model = Restaurant.objects.filter(Q(name__icontains=restaurant) | Q(address__icontains=restaurant))
+        return render(request, self.template_name, {'restaurant_list':model})
     
 class RestaurantView(View):
     '''view for showing restaurant menu category and its detail'''
@@ -172,15 +182,6 @@ class AddItems(View):
             itempriceform.instance.item = item
             itempriceform.save()
             return redirect(reverse('restauranthome',kwargs= {'restaurant_id':restaurant_id}))
-    
-class Search(View):
-    '''view for searching restaurant'''
-
-    template_name = 'user/home.html'
-    def get(self, request, *args, **kwargs):
-        restaurant = request.GET.get('search', '').strip()
-        result_restaurant = Restaurant.objects.filter(Q(name__icontains=restaurant) | Q(address__icontains=restaurant))
-        return render(request, self.template_name, {'restaurant_list':result_restaurant})
     
 
 class AddCartView(View):
@@ -333,9 +334,14 @@ class OrderHistoryListView(ListView):
 
     context_object_name = 'order_list'
     template_name = 'payments/order_history.html'
-    
+
     def get_queryset(self):
         return OrderDetail.objects.filter(user = self.request.user)
+    
+    def get_context_data(self, **kwargs: Any):
+
+        return super().get_context_data(**kwargs)
+    
 class RatingReviewView(View):
     '''view for rating restaurant'''
 
@@ -347,6 +353,22 @@ class RatingReviewView(View):
         order = OrderDetail.objects.get(id = order_id)
         return render(request, self.template_name, context={'restaurant':restaurant, 'order':order})
 
+    def post(self, request, *args, **kwargs):
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        order_id = kwargs['order_id']
+        restaurant_id = kwargs['restaurant_id']
+        restaurant = Restaurant.objects.get(id = restaurant_id)
+        order = OrderDetail.objects.get(id = order_id)
+        RestaurantRating.objects.create(
+            user = request.user,
+            restaurant = restaurant,
+            order = order,
+            rating = rating,
+            comment = comment)
+        return JsonResponse({})
+
+    
 # class RatingReviewView(DetailView):
 #     '''view for rating of a restaurant'''
 

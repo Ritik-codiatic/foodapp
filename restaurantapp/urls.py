@@ -11,7 +11,6 @@ urlpatterns = [
     path('addmenucategory', AddMenuCategory.as_view()),
     path('getaddress', GetAddress.as_view()),
     path('additem/<int:restaurant_id>',AddItems.as_view(), name='additems'),
-    path('search',Search.as_view(),name='search-result'),
     path('addcart',AddCartView.as_view()),
     path('editrestaurant/<int:restaurant_id>',EditRestaurant.as_view()),
     path('image-gallery/<int:restaurant_id>',ImageGallery.as_view()),
