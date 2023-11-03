@@ -160,6 +160,11 @@ if DEBUG:
 #     STRIPE_PUBLISHABLE_KEY = 'production_publishable_key'
 #     STRIPE_SECRET_KEY = 'production_secret_key'
 
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'rmakwan10@gmail.com'
+EMAIL_HOST_PASSWORD = 'vuka wvvk icyy yfuv'
+
+STRIPE_ENDPOINT_SECRET = 'whsec_a3b2664fc61b306edf39789b61e1885886ebcdd18bbdcf7d64fabc1c7c1e96b5'

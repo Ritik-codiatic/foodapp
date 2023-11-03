@@ -1,7 +1,7 @@
 # django imp
 from typing import Any
 from django.db.models.query import QuerySet
-from django.http.response import HttpResponseNotFound, JsonResponse
+from django.http.response import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.urls import reverse, reverse_lazy
 from .models import *
 from django.views.generic import ListView, CreateView, DetailView, TemplateView
@@ -13,6 +13,8 @@ from django.views.generic import View
 from django.http import JsonResponse,HttpResponseRedirect,QueryDict
 from django.urls import reverse
 from django.db.models import Q,Subquery
+from django.core.mail import send_mail
+
 # local imp
 
 from .models import *
@@ -30,13 +32,13 @@ class HomeView(View):
     template_name = 'user/home.html'
     
     def get(self, request, *args, **kwargs):
-        
-        try:
-            if request.user.user_type != "Customer" :
+        if request.user.is_anonymous:
+            model = Restaurant.objects.all()    
+        elif request.user.user_type != "Customer" :
                 model = Restaurant.objects.filter(owner = request.user).all()
-        except:
+        else:
             model = Restaurant.objects.all()
-            
+
         if request.GET.get('search'):
             restaurant = request.GET.get('search', '').strip()
             model = Restaurant.objects.filter(Q(name__icontains=restaurant) | Q(address__icontains=restaurant))
@@ -290,6 +292,7 @@ def create_checkout_session(request, id):
                 'quantity': 1,
             }
         ],
+        
         mode='payment',
         success_url=request.build_absolute_uri(
             reverse('success')
@@ -306,6 +309,31 @@ def create_checkout_session(request, id):
     # return JsonResponse({'data': checkout_session})
     return JsonResponse({'sessionId': checkout_session.id})
 
+
+@csrf_exempt
+def stripe_webhook(request):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    endpoint_secret = settings.STRIPE_ENDPOINT_SECRET
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+     
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+       
+        return HttpResponse(status=400)
+
+    if event['type'] == 'checkout.session.completed':
+        print("Payment was successful.")
+
+
+    return HttpResponse(status=200)
 
 class PaymentSuccessView(TemplateView):
     template_name = "payments/payment_success.html"
@@ -324,6 +352,12 @@ class PaymentSuccessView(TemplateView):
         cart = order.cart
         cart.is_paid = True
         cart.save()
+        subject = 'thanks for ordering from FoodTresure'
+        message = f'Hi {request.user.first_name}, Please review your order from our app. your order no. is {order.id} '
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = ['ritik.makwan@codiatic.com', ]
+        send_mail( subject, message, email_from, recipient_list )
+
         return render(request, self.template_name)
     
 class PaymentFailedView(TemplateView):
@@ -368,7 +402,26 @@ class RatingReviewView(View):
             comment = comment)
         return JsonResponse({})
 
+class RestaurantOrderView(ListView):
+    '''view for showing orders to restaurant'''
+
+    template_name = 'owner/restaurant_orders.html'
+    context_object_name = 'order_list'
+    model = OrderDetail
+
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        restaurant_id = self.kwargs['restaurant_id']
+        context['restaurant'] = Restaurant.objects.get(id = restaurant_id)
+        return context
     
+
+    # def get(self, request, *args, **kwargs):
+    #     restaurant_id = kwargs['restaurant_id']
+    #     restaurant = Restaurant.objects.get(id = restaurant_id)
+    #     order_list = OrderDetail.objects.all()
+    #     return render(request, self.template_name , context={'restaurant':restaurant, 'orders_list':order_list})
+
 # class RatingReviewView(DetailView):
 #     '''view for rating of a restaurant'''
 
