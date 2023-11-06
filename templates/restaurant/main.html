@@ -60,6 +60,7 @@
         })  
     })
 </script>
+<div class="container">
 <div id="carouselExample" class="carousel slide" >
     <div class="carousel-inner">
         {% for img in restaurant.restaurantimage_set.all %}
@@ -106,11 +107,13 @@
         </a>
         <hr>
     </div>
+    {% endfor %}
+</div>
     <script>
       $("#order").click(function(){
         window.location.href="/restaurant-order/"+"{{restaurant.id}}"
       })
     </script>
-    {% endfor %}
+    
 {% endblock %}
 

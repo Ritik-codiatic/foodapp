@@ -13,8 +13,8 @@ from django.views.generic import View
 from django.http import JsonResponse,HttpResponseRedirect,QueryDict
 from django.urls import reverse
 from django.db.models import Q,Subquery
-from django.core.mail import send_mail
-
+from django.core.mail import send_mail,EmailMultiAlternatives
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # local imp
 
 from .models import *
@@ -32,17 +32,35 @@ class HomeView(View):
     template_name = 'user/home.html'
     
     def get(self, request, *args, **kwargs):
-        if request.user.is_anonymous:
-            model = Restaurant.objects.all()    
-        elif request.user.user_type != "Customer" :
-                model = Restaurant.objects.filter(owner = request.user).all()
+        if request.user.is_anonymous or request.user.user_type == "Customer":
+            model = Restaurant.objects.all().order_by('id')   
         else:
-            model = Restaurant.objects.all()
+            model = Restaurant.objects.filter(owner = request.user).all().order_by('id')
 
         if request.GET.get('search'):
             restaurant = request.GET.get('search', '').strip()
-            model = Restaurant.objects.filter(Q(name__icontains=restaurant) | Q(address__icontains=restaurant))
-        return render(request, self.template_name, {'restaurant_list':model})
+            model = Restaurant.objects.filter(Q(name__icontains=restaurant) | Q(address__icontains=restaurant)).all().order_by('id')
+
+        if request.GET.get('rating'):
+            rating = request.GET.get('rating')
+            
+            # model = RestaurantRating.objects.filter(restaurant=4).aggregate(Avg("rating"))["rating__avg"]
+            model = Restaurant.objects.all().annotate(rating_avg=Avg('restaurantrating__rating')).filter(rating_avg__gte=rating)
+            # model = []
+            # for restaurant in restaurants:
+            #     if restaurant.rating_avg >= int(rating):
+            #         model.append(restaurant)
+            
+        p = Paginator(model, 9)
+        page_number = request.GET.get('page')
+        try:
+            page_obj = p.get_page(page_number)
+        except PageNotAnInteger:
+            page_obj = p.page(1)
+        except EmptyPage:
+            page_obj = p.page(p.num_pages)
+    
+        return render(request, self.template_name, {'page_obj':page_obj})
     
 class RestaurantView(View):
     '''view for showing restaurant menu category and its detail'''
@@ -292,7 +310,9 @@ def create_checkout_session(request, id):
                 'quantity': 1,
             }
         ],
-        
+        metadata={'user':request.user.first_name,
+                       'cart':cart,
+                       'amount':int(total_price*100)},
         mode='payment',
         success_url=request.build_absolute_uri(
             reverse('success')
@@ -331,10 +351,19 @@ def stripe_webhook(request):
 
     if event['type'] == 'checkout.session.completed':
         print("Payment was successful.")
-
+        session_id = event['data']['object']['id']
+        # print(event['data']['object']['metadata'])
+        order = get_object_or_404(OrderDetail, stripe_payment_intent=session_id)
+        order.has_paid = True
+        order.save()
+        cart = order.cart
+        cart.is_paid = True
+        cart.save()
+        
 
     return HttpResponse(status=200)
 
+from django.template.loader import render_to_string
 class PaymentSuccessView(TemplateView):
     template_name = "payments/payment_success.html"
 
@@ -346,18 +375,21 @@ class PaymentSuccessView(TemplateView):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         session = stripe.checkout.Session.retrieve(session_id)
 
-        order = get_object_or_404(OrderDetail, stripe_payment_intent=session_id)
-        order.has_paid = True
-        order.save()
-        cart = order.cart
-        cart.is_paid = True
-        cart.save()
+        # order = get_object_or_404(OrderDetail, stripe_payment_intent=session_id)
+        # order.has_paid = True
+        # order.save()
+        # cart = order.cart
+        # cart.is_paid = True
+        # cart.save()
         subject = 'thanks for ordering from FoodTresure'
-        message = f'Hi {request.user.first_name}, Please review your order from our app. your order no. is {order.id} '
+        message = f'Hi {request.user.first_name}, Please review your order from this link /payments/order_history.html . your order no. is {order.id}  '
         email_from = settings.EMAIL_HOST_USER
         recipient_list = ['ritik.makwan@codiatic.com', ]
-        send_mail( subject, message, email_from, recipient_list )
-
+        html_content = "/payments/order_history.html"
+        msg = EmailMultiAlternatives( subject, message, email_from, recipient_list )
+        msg.attach_alternative(html_content,'orders/html')
+        msg.content_subtype = "click me"
+        msg.send()
         return render(request, self.template_name)
     
 class PaymentFailedView(TemplateView):

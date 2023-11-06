@@ -1,8 +1,22 @@
 {% extends 'user/base.html' %}
 {% block content %}
-    
+<div>
+  <form action="{% url 'home' %}" method="get" style="display: inline-block;">
+  <h5 style="display: inline-block;">Rating</h5>
+          <select name="rating" >
+            <option value="1">1.0+</option>
+            <option value="2">2.0+</option>
+            <option value="3">3.0+</option>
+            <option value="4">4.0+</option>
+            <option value="5">5.0+</option>
+          </select>
+          <input type="submit" value="Apply" class="btn btn-outline-success">
+  </form>
+  <a href="{% url 'home' %}"><i class="fa fa-close" style="font-size:28px;color:red"></i></a>
+</div>
+        <div class="main-content responsive-wrapper container">
           <!-- Iterate over object_list -->
-          {% for restaurant in restaurant_list %} 
+          {% for restaurant in page_obj.object_list %} 
 
           <!-- Display Objects -->
           <a href="/{{restaurant.id}}" class="card">
@@ -21,6 +35,17 @@
           {% empty %} 
           <li>No objects yet.</li> 
           {% endfor %} 
-
- 
+        </div>
+        <center>
+          <div style="margin-top: 100%;" >
+            {% if page_obj.has_previous %} 
+                <a href="?page={{page_obj.previous_page_number}}">prev</a> 
+            {% endif %}
+            <span>{{page_obj.number}}</span> 
+           
+            {% if page_obj.has_next %} 
+                <a href="?page={{page_obj.next_page_number}}">next</a> 
+            {% endif %}
+          </div>
+        </center>
     {% endblock %}
