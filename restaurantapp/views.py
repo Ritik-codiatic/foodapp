@@ -45,7 +45,7 @@ class HomeView(View):
             rating = request.GET.get('rating')
             
             # model = RestaurantRating.objects.filter(restaurant=4).aggregate(Avg("rating"))["rating__avg"]
-            model = Restaurant.objects.all().annotate(rating_avg=Avg('restaurantrating__rating')).filter(rating_avg__gte=rating)
+            model = Restaurant.objects.all().annotate(rating_avg=Avg('restaurantrating__rating')).filter(rating_avg__gte=rating).order_by('id')
             # model = []
             # for restaurant in restaurants:
             #     if restaurant.rating_avg >= int(rating):
@@ -359,7 +359,17 @@ def stripe_webhook(request):
         cart = order.cart
         cart.is_paid = True
         cart.save()
-        
+        subject = 'thanks for ordering from FoodTresure'
+        message = f'Hi , Please review your order from this link /payments/order_history.html . your order no. is  '
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = ['ritik.makwan@codiatic.com', ]
+        html_content = render_to_string(
+        'user/email.html'
+        )
+        msg = EmailMultiAlternatives( subject, html_content, email_from, recipient_list )
+        # msg.attach_alternative(html_content,'orders/html')
+        msg.content_subtype = 'html'
+        msg.send()
 
     return HttpResponse(status=200)
 
@@ -381,15 +391,7 @@ class PaymentSuccessView(TemplateView):
         # cart = order.cart
         # cart.is_paid = True
         # cart.save()
-        subject = 'thanks for ordering from FoodTresure'
-        message = f'Hi {request.user.first_name}, Please review your order from this link /payments/order_history.html . your order no. is {order.id}  '
-        email_from = settings.EMAIL_HOST_USER
-        recipient_list = ['ritik.makwan@codiatic.com', ]
-        html_content = "/payments/order_history.html"
-        msg = EmailMultiAlternatives( subject, message, email_from, recipient_list )
-        msg.attach_alternative(html_content,'orders/html')
-        msg.content_subtype = "click me"
-        msg.send()
+        
         return render(request, self.template_name)
     
 class PaymentFailedView(TemplateView):

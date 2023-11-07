@@ -2,6 +2,8 @@ from django.shortcuts import render,redirect
 from django.contrib import auth,messages
 from django.views.generic import View
 from django.views.generic.list import ListView
+from django.contrib.auth.forms import UserCreationForm
+
 # local imp
 from restaurantapp.models import *
 from .forms import UserForm,LoginForm

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .models import CustomUser
 class UserForm(UserCreationForm):
-    #confirm_password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
     
     class Meta:
         model = CustomUser
@@ -37,7 +37,7 @@ class LoginForm(ModelForm):
     def clean(self) :
         pass
 
-class UserForm(ModelForm):
-    class Meta:
-        model = CustomUser
-        fields = ['email','first_name','last_name','mobile_number','profile_pic','gender','address']
+# class UserProfileForm(ModelForm):
+#     class Meta:
+#         model = CustomUser
+#         fields = ['email','first_name','last_name','mobile_number','profile_pic','gender','address']
