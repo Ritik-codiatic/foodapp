@@ -96,28 +96,11 @@ class CartItem(Common):
     quantity = models.IntegerField(default=1)
 
 class OrderDetail(Common):
-
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
-
-    cart = models.ForeignKey(
-        to=Cart,
-        verbose_name='Cart',
-        on_delete=models.PROTECT
-    )
-
-    amount = models.FloatField(
-        verbose_name='Amount'
-    )
-
-    stripe_payment_intent = models.CharField(
-        max_length=200,null=True
-    )
-
-    # This field can be changed as status
-    has_paid = models.BooleanField(
-        default=False,
-        verbose_name='Payment Status'
-    )
+    cart = models.ForeignKey(to=Cart,verbose_name='Cart',on_delete=models.PROTECT)
+    amount = models.FloatField(verbose_name='Amount')
+    stripe_payment_intent = models.CharField( max_length=200,null=True)
+    has_paid = models.BooleanField(default=False,verbose_name='Payment Status')
 
 
 class RestaurantRating(Common):

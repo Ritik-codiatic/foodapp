@@ -62,6 +62,7 @@ class HomeView(View):
     
         return render(request, self.template_name, {'page_obj':page_obj})
     
+from location_field.forms.plain import PlainLocationField
 class RestaurantView(View):
     '''view for showing restaurant menu category and its detail'''
 
@@ -70,6 +71,11 @@ class RestaurantView(View):
     def get(self, request, *args, **kwargs):
         restaurant_id = kwargs['restaurant_id']
         restaurant = Restaurant.objects.get(id=restaurant_id)
+        location = PlainLocationField(based_fields=['city'],
+                                  initial=restaurant.location)
+        
+        menu = Menu.objects.filter(restaurant__id = restaurant_id)
+        # not optimized
         list1 = []
         for item in restaurant.menu_set.all():
             list1.append(item.item.menu_category)
@@ -77,7 +83,7 @@ class RestaurantView(View):
         for i in list1:
             if i not in menu_category:
                 menu_category.append(i)
-        return render(request, self.template_name, context = {'restaurant':restaurant,'menu_category':menu_category})
+        return render(request, self.template_name, context = {'restaurant':restaurant,'menu_category':menu_category,'location':location})
     
 class ItemView(View):
     '''view to display menu items of a category'''
@@ -114,7 +120,7 @@ class EditItemView(View):
         itemform = self.itemform_class(request.POST)
         if itemform.is_valid() and itempriceform.is_valid():
             itempriceform.save()
-            itemform.save()
+            # itemform.save()
             return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
     
     def delete(self, request, *args, **kwargs):
@@ -126,7 +132,7 @@ class EditItemView(View):
 class AddRestaurantView(View):
     '''view to add restaurant'''
     
-    template_name = 'addrestaurant.html'
+    template_name = 'add_restaurant.html'
     form_class = RestaurantForm
     def get(self, request, *args, **kwargs):
         restaurantform = self.form_class()
@@ -436,25 +442,28 @@ class RatingReviewView(View):
             comment = comment)
         return JsonResponse({})
 
-class RestaurantOrderView(ListView):
+class RestaurantOrderView(View):
     '''view for showing orders to restaurant'''
 
     template_name = 'owner/restaurant_orders.html'
-    context_object_name = 'order_list'
-    model = OrderDetail
+    # context_object_name = 'order_list'
+    # model = OrderDetail
 
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
-        restaurant_id = self.kwargs['restaurant_id']
-        context['restaurant'] = Restaurant.objects.get(id = restaurant_id)
-        return context
+    # def get_context_data(self, **kwargs: Any):
+    #     context = super().get_context_data(**kwargs)
+    #     restaurant_id = self.kwargs['restaurant_id']
+    #     context['restaurant'] = Restaurant.objects.get(id = restaurant_id)
+    #     return context
     
 
-    # def get(self, request, *args, **kwargs):
-    #     restaurant_id = kwargs['restaurant_id']
-    #     restaurant = Restaurant.objects.get(id = restaurant_id)
-    #     order_list = OrderDetail.objects.all()
-    #     return render(request, self.template_name , context={'restaurant':restaurant, 'orders_list':order_list})
+    def get(self, request, *args, **kwargs):
+        restaurant_id = kwargs['restaurant_id']
+        restaurant = Restaurant.objects.get(id = restaurant_id)
+        menu_ids = restaurant.menu_set.values_list('id', flat=True)
+        cart_items = CartItem.objects.filter(cart_item_id__in=menu_ids)
+        carts = [cart_item.cart.id for cart_item in cart_items]
+        orders = OrderDetail.objects.filter(cart_id__in=carts)
+        return render(request, self.template_name , context={'restaurant':restaurant, 'order_list':orders})
 
 # class RatingReviewView(DetailView):
 #     '''view for rating of a restaurant'''

@@ -62,13 +62,13 @@ class LogOutView(View):
         auth.logout(request)
         return redirect('/')
     
-class OwnerView(View):
-    '''view to redirecting owner to owner page'''
+# class OwnerView(View):
+#     '''view to redirecting owner to owner page'''
 
-    template_name = 'owner/ownerhome.html'
-    def get(self, request, *args, **kwargs):
-        restaurant = Restaurant.objects.filter(owner__id=request.user.id)
-        return render(request, self.template_name, {'restaurants' : restaurant})
+#     template_name = 'owner/ownerhome.html'
+#     def get(self, request, *args, **kwargs):
+#         restaurant = Restaurant.objects.filter(owner__id=request.user.id)
+#         return render(request, self.template_name, {'restaurants' : restaurant})
  
 
 class UserProfileView(View):

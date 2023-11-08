@@ -3,6 +3,8 @@ from .models import *
 
 # dajngo imp
 from django.forms import ModelForm
+from django import forms
+# libs imp
 from location_field.forms.plain import PlainLocationField
 
 class RestaurantForm(ModelForm):
@@ -11,6 +13,9 @@ class RestaurantForm(ModelForm):
     class Meta:
         model = Restaurant
         exclude = ['owner']
+        widget = {
+            'opening_time' : forms.TimeInput(attrs={'type': 'time'})
+        }
         
 class MenuCategoryForm(ModelForm):
     class Meta:

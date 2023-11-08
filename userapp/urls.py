@@ -4,7 +4,7 @@ from django.contrib.auth import views
 from django.views.generic import TemplateView
 #local imp 
 
-from .views import SignupFormView, LoginFormView, LogOutView, OwnerView, UserProfileView
+from .views import *
 
 urlpatterns = [
     path('user-profile',UserProfileView.as_view()),
@@ -12,7 +12,7 @@ urlpatterns = [
    # path('login/', LoginFormView.as_view()),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', LogOutView.as_view()),
-    path('owner/', OwnerView.as_view()),
+    # path('owner/', OwnerView.as_view()),
     path('password-reset/', views.PasswordResetView.as_view(), name='password_reset'),
     path('password-reset/done/', views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
