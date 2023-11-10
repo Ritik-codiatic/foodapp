@@ -3,12 +3,16 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .models import CustomUser
 class UserForm(UserCreationForm):
-    confirm_password = forms.CharField(widget=forms.PasswordInput)
+   # confirm_password = forms.CharField(widget=forms.PasswordInput)
     
     class Meta:
         model = CustomUser
         fields = ["first_name", "last_name", "email", "mobile_number",
-                   "user_type", "address", "gender", "profile_pic", "city_name"]
+                   "user_type", "address", "gender", "profile_pic"]
+        widgets = {
+            'address' : forms.Textarea(attrs={'cols':'25','rows':'5'})
+        }
+        
     # def clean(self):
     #     cleaned_data = super(UserForm, self).clean()
     #     password = cleaned_data.get("password")

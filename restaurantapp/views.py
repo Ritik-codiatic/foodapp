@@ -118,9 +118,11 @@ class EditItemView(View):
     def post(self, request, *args, **kwargs):
         itempriceform = self.itempriceform_class(request.POST,request.FILES)
         itemform = self.itemform_class(request.POST)
+        breakpoint()
         if itemform.is_valid() and itempriceform.is_valid():
             itempriceform.save()
             # itemform.save()
+            breakpoint()
             return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
     
     def delete(self, request, *args, **kwargs):
@@ -144,7 +146,7 @@ class AddRestaurantView(View):
             owner = CustomUser.objects.get(id = request.user.id)
             restaurantform.instance.owner = owner
             restaurantform.save()
-            return redirect('/user/owner')
+            return redirect('/')
         
     
 class RestaurantHome(View):
@@ -177,12 +179,20 @@ class AddMenuCategory(View):
 
 class GetAddress(View):
     def get(self, request, *args, **kwargs):
-        location = request.GET.get('location')
-        coordinates = location.split(',')
-        geolocator = Nominatim(user_agent="geoapiExercises")
-        address = geolocator.reverse(coordinates[0]+","+coordinates[1])
-        address = address[0]
         
+        if request.GET.get('location'):
+            location = request.GET.get('location')
+            coordinates = location.split(',')
+            geolocator = Nominatim(user_agent="geoapiExercises")
+            address = geolocator.reverse(coordinates[0]+","+coordinates[1])
+            address = address[0]
+        else:
+            
+            lat = request.GET.get('latitude')
+            lng = request.GET.get('longitude')
+            geolocator = Nominatim(user_agent="geoapiExercises")
+            address = geolocator.reverse(str(lat)+","+str(lng))
+            address = address[0]
         return JsonResponse({'address':address})
     
     
@@ -207,7 +217,7 @@ class AddItems(View):
             itempriceform.instance.restaurant = restaurant
             itempriceform.instance.item = item
             itempriceform.save()
-            return redirect(reverse('restauranthome',kwargs= {'restaurant_id':restaurant_id}))
+            return redirect(reverse('main_page',kwargs= {'restaurant_id':restaurant_id}))
     
 
 class AddCartView(View):
@@ -262,7 +272,7 @@ class EditRestaurant(View):
             form.instance.id = restaurant_id
             form.instance.owner = owner
             form.save()
-            return redirect(reverse('restauranthome', kwargs={'restaurant_id':restaurant_id}))
+            return redirect(reverse('main_page', kwargs={'restaurant_id':restaurant_id}))
     
     def delete(self, request, *args, **kwargs):
         restaurant_id = kwargs['restaurant_id']
@@ -460,10 +470,10 @@ class RestaurantOrderView(View):
         restaurant_id = kwargs['restaurant_id']
         restaurant = Restaurant.objects.get(id = restaurant_id)
         menu_ids = restaurant.menu_set.values_list('id', flat=True)
-        cart_items = CartItem.objects.filter(cart_item_id__in=menu_ids)
+        cart_items = CartItem.objects.filter(cart_item_id__in=menu_ids)#,cart_item__restaurant_id=restaurant_id)
         carts = [cart_item.cart.id for cart_item in cart_items]
-        orders = OrderDetail.objects.filter(cart_id__in=carts)
-        return render(request, self.template_name , context={'restaurant':restaurant, 'order_list':orders})
+        orders = OrderDetail.objects.filter(cart_id__in=carts)#.annotate(items='cart__cart_item').filter(items__restaurant__id=restaurant_id)
+        return render(request, self.template_name , context={'restaurant':restaurant, 'order_list':orders,'cart_items':cart_items})
 
 # class RatingReviewView(DetailView):
 #     '''view for rating of a restaurant'''

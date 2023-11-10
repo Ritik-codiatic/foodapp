@@ -13,8 +13,9 @@ class RestaurantForm(ModelForm):
     class Meta:
         model = Restaurant
         exclude = ['owner']
-        widget = {
-            'opening_time' : forms.TimeInput(attrs={'type': 'time'})
+        widgets = {
+            'opening_time' : forms.TimeInput(attrs={'type': 'time'}),
+            'closing_time' : forms.TimeInput(attrs={'type': 'time'})
         }
         
 class MenuCategoryForm(ModelForm):

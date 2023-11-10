@@ -25,7 +25,7 @@ class SignupFormView(View):
         
         if form.is_valid():
             form.save()
-            return redirect('/')
+            return redirect('login')
         return render(request, self.template_name, context = {'form':form})
 
 

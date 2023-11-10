@@ -36,16 +36,15 @@
           <li>No objects yet.</li> 
           {% endfor %} 
         </div>
-        <center>
-          <div style="margin-top: 100%;" >
+        
+          <div style="margin-top: 800px; margin-left: 450px; position: absolute;" >
             {% if page_obj.has_previous %} 
-                <a href="?page={{page_obj.previous_page_number}}">prev</a> 
+                <a href="?page={{page_obj.previous_page_number}}"><<</a> 
             {% endif %}
             <span>{{page_obj.number}}</span> 
            
             {% if page_obj.has_next %} 
-                <a href="?page={{page_obj.next_page_number}}">next</a> 
+                <a href="?page={{page_obj.next_page_number}}">>></a> 
             {% endif %}
           </div>
-        </center>
     {% endblock %}

@@ -73,15 +73,15 @@ background:#eee;
                         <div class="col-md-12">
                             <div class="pull-right"><label class="label label-danger">Paid</label></div>
                             <span><strong>Order Number</strong></span> <span class="label label-info">{{order.id}}</span><br />
-                            <!-- {% for item in order.cart.cartitem_set.all %}
-                            {% if item.cart_item.restaurant.id == restaurant.id %} -->
-                            {{item.cart_item.item.name}} 
+                            {% for item in cart_items %}
+                            {% if order.cart.id == item.cart.id %}
+                            {{item.cart_item.item.name}}
                             Quantity : ({{item.quantity}}), Rs.{% widthratio item.quantity 1 item.cart_item.price %} <br />
                             <!-- <a data-placement="top" class="btn btn-success btn-xs glyphicon glyphicon-ok" href="#" title="View"></a>
                             <a data-placement="top" class="btn btn-danger btn-xs glyphicon glyphicon-trash" href="#" title="Danger"></a>
                             <a data-placement="top" class="btn btn-info btn-xs glyphicon glyphicon-usd" href="#" title="Danger"></a> -->
-                            <!-- {% endif %}
-                            {% endfor %} -->
+                            {% endif %}
+                            {% endfor %}
                         </div>
                         <div class="col-md-12">order made on: {{order.created_at}} by {{order.user.first_name}}</div>
                     </div>

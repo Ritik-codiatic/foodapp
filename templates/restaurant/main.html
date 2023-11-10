@@ -67,16 +67,17 @@
     })
 </script>
 <div class="container">
-<div id="carouselExample" class="carousel slide" >
+  <div>
+<div id="carouselExample" class="carousel slide" style="width: 70%; float: left;">
     <div class="carousel-inner">
         {% for img in restaurant.restaurantimage_set.all %}
         {% if forloop.first %} 
       <div class="carousel-item active" >
-        <img src="{{img.image.url}}" class="d-block w-100" alt="noimage" >
+        <img src="{{img.image.url}}" class="d-block w-100" alt="noimage" style="height: 438px;" >
       </div>
       {% else %}
       <div class="carousel-item" >
-            <img src="{{img.image.url}}" class="d-block w-100" alt="noimage">
+            <img src="{{img.image.url}}" class="d-block w-100" alt="noimage" style="height: 438px;">
       </div>
       {% endif %}
         {% endfor %}
@@ -90,9 +91,14 @@
       <span class="visually-hidden">Next</span>
     </button>
   </div>
+  <!--The div element for the map -->
+  <div id="map"></div>
+</div>
   <hr> 
     {% if not request.user.user_type == 'Customer' %}   
     {% if request.user.is_authenticated %}
+    <button style="margin-left: 1000px;" class="btn btn-outline-light"><a href="/additem/{{restaurant.id}}">Add Items</a></button>
+    <hr>
     <button style="margin-left: 1000px;" class="btn btn-outline-dark"><a href="/image-gallery/{{restaurant.id}}">Image Gallery</a></button>
     <hr>
     <button style="margin-left: 1000px;" id="order" class="btn btn-outline-success">Orders</button>
@@ -114,8 +120,7 @@
         <hr>
     </div>
     {% endfor %}
-    <!--The div element for the map -->
-    <div id="map"></div>
+    
 </div>
 
     <script>
@@ -129,8 +134,8 @@
  * that contains the map. 
  */
 #map {
-  height: 500px;
-  width: 500px;
+  height: 438px;
+  width: 30%;
 }
 
 /* 

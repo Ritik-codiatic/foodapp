@@ -51,8 +51,8 @@ $(document).ready(function(){
     <hr>
     {% for image in images %}
     <div class="card">
-    <img src="{{image.image.url}}" alt="noimage" height="300px" width="300px">
-    <div class="card-footer">
+    <img class="card-img-top" src="{{image.image.url}}" alt="noimage" height="150px" width="300px">
+    <div class="card-body">
         <input type="hidden"  value="{{image.id}}" class="image_id">
     <button class="deletebutton btn btn-primary">Delete</button>
     

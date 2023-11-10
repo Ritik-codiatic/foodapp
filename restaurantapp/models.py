@@ -64,7 +64,7 @@ class Menu(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     price = models.PositiveIntegerField()
-    image = models.ImageField(upload_to='pics/menuitems')
+    image = models.ImageField(upload_to='pics/menuitems',null=True)
     description = models.TextField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
