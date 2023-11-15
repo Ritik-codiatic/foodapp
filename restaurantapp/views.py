@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.db.models import Q,Subquery
 from django.core.mail import send_mail,EmailMultiAlternatives
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.mixins import LoginRequiredMixin
 # local imp
 
 from .models import *
@@ -101,9 +102,11 @@ class ItemView(View):
         #     cart_item__restaurant=restaurant,cart_item__item__menu_category=menucategory)))
         return render(request, self.template_name, context = {'items':items,'menucategory':menucategory,'restaurant':restaurant})
 
-class EditItemView(View):
+class EditItemView(LoginRequiredMixin, View):
     '''view to edit restaurant item'''
 
+    login_url =  'login'
+    redirect_field_name = 'login'
     template_name = 'edit_item.html'  
     itemform_class = ItemForm
     itempriceform_class = ItemPriceForm
@@ -131,9 +134,11 @@ class EditItemView(View):
         return JsonResponse({})
     
 
-class AddRestaurantView(View):
+class AddRestaurantView(LoginRequiredMixin, View):
     '''view to add restaurant'''
     
+    login_url =  'login'
+    redirect_field_name = 'login'
     template_name = 'add_restaurant.html'
     form_class = RestaurantForm
     def get(self, request, *args, **kwargs):
@@ -196,9 +201,11 @@ class GetAddress(View):
         return JsonResponse({'address':address})
     
     
-class AddItems(View):
+class AddItems(LoginRequiredMixin, View):
     '''add items by owner'''
     
+    login_url =  'login'
+    redirect_field_name = 'login'
     template_name = 'additem.html'
     itemform_form_class = ItemForm
     itemprice_form_class = ItemPriceForm
@@ -220,9 +227,11 @@ class AddItems(View):
             return redirect(reverse('main_page',kwargs= {'restaurant_id':restaurant_id}))
     
 
-class AddCartView(View):
+class AddCartView(LoginRequiredMixin, View):
     '''view for adding item to cart '''
 
+    login_url =  'login'
+    redirect_field_name = 'login'
     template_name = 'restaurant/cart.html'
     def get(self, request, *args, **kwargs):
         cart ,_= Cart.objects.get_or_create(user=request.user,is_paid = False)
@@ -252,9 +261,11 @@ class AddCartView(View):
         cartitem = CartItem.objects.get(cart_item=item, cart=cart).delete()
         return JsonResponse({})
     
-class EditRestaurant(View):
+class EditRestaurant(LoginRequiredMixin, View):
     '''view for editing restaurant'''
 
+    login_url =  'login'
+    redirect_field_name = 'login'
     form_class = RestaurantForm
     template_name = 'restaurantprofile.html'
     def get(self, request, *args, **kwargs):
@@ -279,9 +290,11 @@ class EditRestaurant(View):
         Restaurant.objects.get(id = restaurant_id).delete()
         return JsonResponse({})
 
-class ImageGallery(View):
+class ImageGallery(LoginRequiredMixin, View):
     '''view for viewing image'''
 
+    login_url =  'login'
+    redirect_field_name = 'login'
     form_class = RestaurantImageForm
     template_name = 'image_gallery.html'
     def get(self, request, *args, **kwargs):
@@ -413,9 +426,11 @@ class PaymentSuccessView(TemplateView):
 class PaymentFailedView(TemplateView):
     template_name = "payments/payment_failed.html"
 
-class OrderHistoryListView(ListView):
+class OrderHistoryListView(LoginRequiredMixin,ListView):
     '''view for showing user order history'''
 
+    login_url =  'login'
+    redirect_field_name = 'login'
     context_object_name = 'order_list'
     template_name = 'payments/order_history.html'
 
@@ -444,6 +459,7 @@ class RatingReviewView(View):
         restaurant_id = kwargs['restaurant_id']
         restaurant = Restaurant.objects.get(id = restaurant_id)
         order = OrderDetail.objects.get(id = order_id)
+        
         RestaurantRating.objects.create(
             user = request.user,
             restaurant = restaurant,

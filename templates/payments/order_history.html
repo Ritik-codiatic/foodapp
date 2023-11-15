@@ -187,13 +187,15 @@ background:#eee;
                             <!-- <a data-placement="top" class="btn btn-success btn-xs glyphicon glyphicon-ok" href="#" title="View"></a>
                             <a data-placement="top" class="btn btn-danger btn-xs glyphicon glyphicon-trash" href="#" title="Danger"></a>
                             <a data-placement="top" class="btn btn-info btn-xs glyphicon glyphicon-usd" href="#" title="Danger"></a> -->
-                            <input type="hidden" value="{{item.cart_item.restaurant.id}}" class="restaurant_id">
-                            <input type="hidden" value="{{order.id}}" class="order_id">
+                           
                             {% if order.has_paid %}
                             {% if rating == 0 %}
-                            <!-- <button class="feedback">Review</button>  -->
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#form"> Review </button>    <br>
-                        <div class="modal fade" id="form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div>
+                            <input type="hidden" value="{{item.cart_item.restaurant.id}}" class="restaurant_id">
+                            <input type="hidden" value="{{order.id}}" class="order_id">
+                            <button type="button" class="btn btn-danger review" data-toggle="modal" data-target="#form"> Review </button>    <br>
+                            </div>
+                            <div class="modal fade" id="form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="text-right cross"> <i class="fa fa-times mr-2"></i> </div>
@@ -202,8 +204,7 @@ background:#eee;
                                         <h4>Add a comment</h4>
                                         <div class="rating"> <input type="radio" name="rating" value="5" class="star" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" class="star" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" class="star" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" class="star" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" class="star" id="1"><label for="1">☆</label> </div>
                                         <div class="comment-area"> <textarea class="form-control comment" placeholder="do you like your order?" rows="4"></textarea> </div>
-                                            <input type="hidden" value="{{item.cart_item.restaurant.id}}" class="restaurant_id">
-                                            <input type="hidden" value="{{order.id}}" class="order_id">
+                                           
                                             <div class="text-center mt-4"> <button class="btn btn-success send px-5 post">Post <i class="fa fa-long-arrow-right ml-1"></i></button>
                                     </div>
                                     </div>
@@ -212,7 +213,6 @@ background:#eee;
                         </div>
                         </div>
                             {% else %}
-                            <!-- <p style="display: inline-block;">you rated {% item_rating request.user.id item.cart_item.restaurant.id order.id %}</p> -->
                             <span class="fa fa-star {% if rating >= 1 %} checked {% endif %}"></span>
                             <span class="fa fa-star {% if rating >= 2 %} checked {% endif %}"></span>
                             <span class="fa fa-star {% if rating >= 3 %} checked {% endif %}"></span>
@@ -241,85 +241,34 @@ background:#eee;
     </div>
 </div>
 
-<!-- <center>
-{% if order_list %}
-{% for order in order_list %}
-    {% if order.has_paid %}
-    <p>Order Successfull !</p>
-    {% else %}
-    <p>Order failed</p>
-    {% endif %}
-    <p>Total Amount Rs {{order.amount}}</p>
-    {% for item in order.cart.cartitem_set.all %}
-    {% item_rating request.user.id item.cart_item.restaurant.id order.id as rating %}
-    {% ifchanged item.cart_item.restaurant.name %}
-    <div> -->
-                <!-- <p>{{item.cart_item.item.name}} ({{item.quantity}}) </p> -->
-    <!-- <p style="display: inline-block;"> From : {{item.cart_item.restaurant.name}} </p>
-    {% for items in order.cart.cartitem_set.all %}
-    {% if items.cart_item.restaurant.id == item.cart_item.restaurant.id %}
-        <p>{{items.cart_item.item.name}} ({{items.quantity}})</p>
-    {% endif %}
-    {% endfor %}
-    <input type="hidden" value="{{item.cart_item.restaurant.id}}" class="restaurant_id">
-    <input type="hidden" value="{{order.id}}" class="order_id">
-    {% if order.has_paid %}
-    {% if rating == 0 %} -->
-                <!-- <button class="feedback">Review</button>  -->
-    <!-- <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#form"> Review </button>    
-<div class="modal fade" id="form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="text-right cross"> <i class="fa fa-times mr-2"></i> </div>
-            <div class="card-body text-center"> <img src="https://i.imgur.com/d2dKtI7.png" height="100" width="100">
-                <div class="comment-box text-center">
-                <h4>Add a comment</h4>
-                <div class="rating"> <input type="radio" name="rating" value="5" class="star" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" class="star" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" class="star" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" class="star" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" class="star" id="1"><label for="1">☆</label> </div>
-                <div class="comment-area"> <textarea class="form-control comment" placeholder="do you like your order?" rows="4"></textarea> </div>
-                    <input type="hidden" value="{{item.cart_item.restaurant.id}}" class="restaurant_id">
-                    <input type="hidden" value="{{order.id}}" class="order_id">
-                    <div class="text-center mt-4"> <button class="btn btn-success send px-5 post">Post <i class="fa fa-long-arrow-right ml-1"></i></button>
-            </div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-    {% else %} -->
-                    <!-- <p style="display: inline-block;">you rated {% item_rating request.user.id item.cart_item.restaurant.id order.id %}</p> -->
-    <!-- <span class="fa fa-star {% if rating >= 1 %} checked {% endif %}"></span>
-    <span class="fa fa-star {% if rating >= 2 %} checked {% endif %}"></span>
-    <span class="fa fa-star {% if rating >= 3 %} checked {% endif %}"></span>
-    <span class="fa fa-star {% if rating >= 4 %} checked {% endif %}"></span>
-    <span class="fa fa-star {% if rating == 5 %} checked {% endif %}"></span>
-    {% endif %}
-    {% endif %}
-    {% endifchanged %}
-    {% endfor %}
-    <div>
-    <p>Order Date : {{order.updated_at}}</p>
-    <hr>
-    </div>
-{% endfor %}
-{% else %}
-<p>No orders yet!!</p>
-{% endif %}
-</center> -->
 <script>
     $(document).ready(function(){
         var value = 0
         var csrf_token = '{{ csrf_token }}';
+        var order_id = 0
+        var restaurant_id = 0
         $(".star").click(function(){
             value = $(this).val()
             
         })
+        $(".review").click(function(){
+            var current = $(this)
+            var parent = current.parent()
+            order_id = parent.find('.order_id').val()
+            restaurant_id = parent.find('.restaurant_id').val()   
+            // console.log(restaurant_id)
+            // console.log(order_id)
+        })
         $(".post").click(function(){
             var current = $(this)
             var parent = current.parent().parent()
-            var order_id = parent.find('.order_id').val()
-            var restaurant_id = parent.find('.restaurant_id').val()
+            // var order_id = parent.find('.order_id').val()
+            // var restaurant_id = parent.find('.restaurant_id').val()
             var comment = parent.find('.comment').val()
-            console.log(comment)
+
+            console.log(restaurant_id)
+            console.log(order_id)
+            
             if (value == 0){
                 Swal.fire("atleast give 1 Star")
             }

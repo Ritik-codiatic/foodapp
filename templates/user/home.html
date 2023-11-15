@@ -14,10 +14,10 @@
   </form>
   <a href="{% url 'home' %}"><i class="fa fa-close" style="font-size:28px;color:red"></i></a>
 </div>
-        <div class="main-content responsive-wrapper container">
+        <div class="main-content responsive-wrapper container" style="margin-left: 40px;">
           <!-- Iterate over object_list -->
           {% for restaurant in page_obj.object_list %} 
-
+          <div >
           <!-- Display Objects -->
           <a href="/{{restaurant.id}}" class="card">
             <img src="{{restaurant.restaurantimage_set.first.image.url}}" alt="balloon with an emoji face" class="card__img">
@@ -31,6 +31,7 @@
                 </svg>
               </span> -->
             </a>
+          </div>
           <!-- If object_list is empty  -->
           {% empty %} 
           <li>No objects yet.</li> 

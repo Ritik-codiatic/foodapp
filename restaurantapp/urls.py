@@ -14,7 +14,7 @@ urlpatterns = [
     path('addcart',AddCartView.as_view()),
     path('editrestaurant/<int:restaurant_id>',EditRestaurant.as_view()),
     path('image-gallery/<int:restaurant_id>',ImageGallery.as_view()),
-    path('edit-item/<int:item_id>',EditItemView.as_view()),
+    path('edit-item/<int:item_id>',EditItemView.as_view(),name="edit-item"),
     path('success/', PaymentSuccessView.as_view(), name='success'),
     path('failed/', PaymentFailedView.as_view(), name='failed'),
     path('history/', OrderHistoryListView.as_view(), name='history'),
