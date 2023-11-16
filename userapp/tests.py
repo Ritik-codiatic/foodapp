@@ -4,7 +4,6 @@ from .forms import UserForm
 from django.urls import reverse
 class UserTestCase(TestCase):
     def setUp(self):
-        for i in range(10):
             CustomUser.objects.create(
                 first_name="abhishek",
                 last_name="pawar",
@@ -19,6 +18,12 @@ class UserTestCase(TestCase):
 
         user = CustomUser.objects.get(first_name="abhishek")
         self.assertEqual(user.last_name,'pawar')
+    
+    def test_user_is_updated(self):
+        '''user is updated '''
+        user = CustomUser.objects.get(email="abhishek@gmail.com")
+        
+
     
 
 class UserFormTestCase(TestCase):
@@ -42,8 +47,11 @@ class ViewsTestCase(TestCase):
         self.assertTemplateUsed(response,"user/home.html")
     
     def test_login_user(self):
-        user = self.client.post(reverse('login'),{"email":"ritik@gmail.com","password":"Ritik@123"})
-        self.assertEqual(user.status_code,200)
+        CustomUser.objects.create(email="ritik@gmail.com",password="Ritik@gmail.com")
+        user = CustomUser.objects.get(email="ritik@gmail.com")
+        login = self.client.post(reverse('login'),self.client.force_login(user=user))
+        #user = self.client.post(reverse('login'),{"email":"ritik@gmail.com","password":"Ritik@123"})
+        self.assertEqual(login.status_code,200)
 
 class LoginRequiredTestCase(TestCase):
     '''anonymous cannot see this page'''

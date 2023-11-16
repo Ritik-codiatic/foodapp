@@ -87,3 +87,5 @@ class UserProfileView(View):
             user_form.save()
             return redirect('/')
 
+def custom_page_not_found_view(request, exception):
+    return render(request, "404.html", {})
