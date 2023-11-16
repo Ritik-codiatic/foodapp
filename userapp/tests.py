@@ -22,7 +22,14 @@ class UserTestCase(TestCase):
     def test_user_is_updated(self):
         '''user is updated '''
         user = CustomUser.objects.get(email="abhishek@gmail.com")
-        
+        user.first_name = "abhi"
+        user.save()
+        self.assertEqual(user.first_name,"abhi")
+
+    def test_user_is_deleted(self):
+        '''user is deleted'''
+
+
 
     
 

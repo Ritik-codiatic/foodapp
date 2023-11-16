@@ -41,7 +41,10 @@ class LoginForm(ModelForm):
     def clean(self) :
         pass
 
-# class UserProfileForm(ModelForm):
-#     class Meta:
-#         model = CustomUser
-#         fields = ['email','first_name','last_name','mobile_number','profile_pic','gender','address']
+class UserProfileForm(ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name','last_name','profile_pic','gender','address']
+        widgets = {
+            'address' : forms.Textarea(attrs={'cols':'20','rows':'5'})
+        }

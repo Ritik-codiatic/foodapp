@@ -70,14 +70,63 @@
                     <div class="col-md-12"><label class="labels">Image</label>{{user_form.profile_pic}}</div>
                     <div class="col-md-12"><label class="labels">Image</label>{{user_form.gender}}</div>
                     </div>
-                <div class="mt-5 text-center"><input type="submit" value="save profile"></div>
+                <div class="mt-5 text-center"><input type="submit" value="save profile" class="btn btn-outline-success"></div>
+                <!-- <div class="mt-5 text-center"><button class="btn btn-outline-danger" id="remove">Remove Account</button></div> -->
             </div>
         </form>
         </div>
-        
+        <div style="margin-left: 700px;margin-top: 240px; position: absolute;">
+            <button onclick="getLocation()">Use Current Location</button>
+        </div>
     </div>
 </div>
 </div>
 </div>
-
+<script>
+    const x = document.getElementById("demo");
+    
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+      } else { 
+        x.innerHTML = "Geolocation is not supported by this browser.";
+      }
+    }
+    
+    function showPosition(position) {
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+      $(document).ready(function(){
+        $.ajax({
+        url: "/getaddress",
+        type: 'GET',
+        data:{'latitude':latitude,'longitude':longitude},
+        dataType: 'json',
+        success: function(result){
+            $("#id_address").val(result['address'])
+        }
+      })
+      })
+      
+    
+    }
+    </script>
+<!-- <script>
+    $(document).ready(function(){
+        $("#remove").click(function(){
+            var csrf_token = '{{ csrf_token }}';
+            $.ajax({
+                url: "{% url 'profile' %}",
+                type: "DELETE",
+                beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                },
+                dataType: 'json',
+                success: function(result){
+                    window.location.href="/"
+                }
+            })
+        })
+    })
+</script> -->
 {% endblock %}

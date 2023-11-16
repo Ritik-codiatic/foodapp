@@ -16,7 +16,7 @@ class CustomUser(AbstractUser):
     GENDER_CHOICES = (("Male","Male"),("Female","Female"))
 
     user_type = models.CharField(max_length=20,choices=USER_TYPES)
-    mobile_number = models.CharField(null=True,max_length=10,unique=True,error_messages={
+    mobile_number = models.CharField(null=True, max_length=10, unique=True, error_messages={
             'unique': _(
                 "A user is already registered with this Mobile number"),
         },)
@@ -25,7 +25,7 @@ class CustomUser(AbstractUser):
     profile_pic = models.ImageField(upload_to='pics',blank=True,null=True)
     city_name = models.ForeignKey('City',on_delete=models.CASCADE,null=True)
     username = None
-    email = models.EmailField(_('email address'), unique=True,error_messages={
+    email = models.EmailField(_('email address'), unique=True, error_messages={
             'unique': _(
                 "A user is already registered with this email address"),
         },)

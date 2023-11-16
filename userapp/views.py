@@ -3,10 +3,11 @@ from django.contrib import auth,messages
 from django.views.generic import View
 from django.views.generic.list import ListView
 from django.contrib.auth.forms import UserCreationForm
+from django.http import JsonResponse
 
 # local imp
 from restaurantapp.models import *
-from .forms import UserForm,LoginForm
+from .forms import UserForm,LoginForm,UserProfileForm
 from .models import *
 # Create your views here.
 
@@ -75,7 +76,7 @@ class UserProfileView(View):
     '''view for showing user profile'''
 
     template_name = 'user/user_profile.html'
-    form_class = UserForm
+    form_class = UserProfileForm
     def get(self, request, *args, **kwargs):
         user = CustomUser.objects.get(id = request.user.id)
         user_form = self.form_class(instance=user)
@@ -83,9 +84,16 @@ class UserProfileView(View):
     
     def post(self, request, *args, **kwargs):
         user_form = self.form_class(request.POST,request.FILES)
+        breakpoint()
         if user_form.is_valid():
             user_form.save()
             return redirect('/')
+    
+    # def delete(self, request, *args, **kwargs):
+    #     breakpoint()
+    #     CustomUser.objects.get(id = request.user.id).delete()
+    #     return JsonResponse({})
+    
 
 def custom_page_not_found_view(request, exception):
     return render(request, "404.html", {})

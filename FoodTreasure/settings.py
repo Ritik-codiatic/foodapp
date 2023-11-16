@@ -23,11 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '4oj^g2k0wij5q1tw7z7z!mt7gvm3o(@9@geulu-2djrkk%om4v'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-TEMPLATE_DEBUG = DEBUG
+# TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -89,6 +89,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'foodtreasure', 
         'USER': 'postgres',
+        'TEST': {
+            'NAME': 'testfoodtreasure', 
+        },
         'PASSWORD': 'developer',
         'HOST': '127.0.0.1', 
         'PORT': '5432',
