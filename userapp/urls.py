@@ -7,11 +7,11 @@ from django.views.generic import TemplateView
 from .views import *
 
 urlpatterns = [
-    path('user-profile',UserProfileView.as_view(),name="profile"),
-    path('signup/', SignupFormView.as_view()),
-   # path('login/', LoginFormView.as_view()),
-    path('login/', views.LoginView.as_view(), name='login'),
-    path('logout/', LogOutView.as_view()),
+    path('user-profile/<pk>',UserProfileUpdate.as_view(),name="profile"),
+    path('signup/', SignupFormView.as_view(),name='signup'),
+    path('login/', LoginFormView.as_view(),name='login'),
+    #path('login/', views.LoginView.as_view(), name='login'),
+    path('logout/', LogOutView.as_view(),name='logout'),
     # path('owner/', OwnerView.as_view()),
     path('password-reset/', views.PasswordResetView.as_view(), name='password_reset'),
     path('password-reset/done/', views.PasswordResetDoneView.as_view(), name='password_reset_done'),

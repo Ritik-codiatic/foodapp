@@ -33,13 +33,21 @@ class UserForm(UserCreationForm):
     #             "mobile number should contain 10 digits"
     #         )  
 
-class LoginForm(ModelForm):
-    class Meta:
-        model = CustomUser  
-        fields = ["email","password"]
+class LoginForm(forms.Form):
+    email = forms.EmailField(required=True)
+    # attrs = {
+    #     'type': 'password'
+    # }
+    password = forms.CharField(widget=forms.PasswordInput())
+    # class Meta:
+    #     model = CustomUser  
+    #     fields = ["email","password"]
+    #     widgets = {
+    #         'password': forms.PasswordInput()
+    #     }
     
-    def clean(self) :
-        pass
+    # def clean(self) :
+    #     pass
 
 class UserProfileForm(ModelForm):
     class Meta:

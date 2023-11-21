@@ -36,7 +36,7 @@
 			</div>
 			<a href="/">Home</a>
 			{% if user.is_authenticated %} 
-				{% if not user.user_type == 'Customer' %}
+				{% if not user.user_type == 'Customer' or user.user_type == 'owner' %}
 					<a href="/addrestaurant">Add Restaurant</a>
 					{% block item %}
 		
@@ -45,10 +45,11 @@
 					{% block restaurantprofile %}
 
 					{% endblock %}
-				{% endif %}
+				{% else %}
 				<a href="/addcart">Cart</a>
 				<a href="{% url 'orders' %}">Orders</a>
-				<a href="/user/user-profile">Your Profile</a>
+				{% endif %}
+				<a href="/user/user-profile/{{request.user.id}}">Your Profile </a>
 				<a href="/user/logout">Logout</a>
             {% else %}
             	<a href="/user/signup">Signup</a>
@@ -64,12 +65,13 @@
         {% block content %}
 		
         {% endblock %}
+		
 	</div>
    <!-- Link JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-
+	
 </body>
 </html>

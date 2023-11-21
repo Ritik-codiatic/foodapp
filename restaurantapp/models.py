@@ -32,6 +32,9 @@ class Restaurant(models.Model):
     def average_rating(self) -> float:
         return RestaurantRating.objects.filter(restaurant=self).aggregate(Avg("rating"))["rating__avg"] or 0
 
+    def restaurant_menu_catogory(self):
+        return Menu.objects.filter(restaurant=self)
+
     def __str__(self) -> str:
         return self.name
 

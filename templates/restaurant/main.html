@@ -27,7 +27,9 @@
 .button-overlay button:hover {
   background-color: #308c94f7;
 }
-
+.checked {
+      color: orange;
+    }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {{location.media}}
@@ -109,7 +111,12 @@
     {% endif %}
     {% endif %}
     <input type="hidden" value="{{restaurant.id}}" id="restaurant_id">
-    <h1>{{restaurant.name}}</h1>
+    <h1 style="display: inline-block;">{{restaurant.name}}</h1>
+    <span class="fa fa-star {% if restaurant.average_rating >= 1 %} checked {% endif %}"></span>
+    <span class="fa fa-star {% if restaurant.average_rating >= 2 %} checked {% endif %}"></span>
+    <span class="fa fa-star {% if restaurant.average_rating >= 3 %} checked {% endif %}"></span>
+    <span class="fa fa-star {% if restaurant.average_rating >= 4 %} checked {% endif %}"></span>
+    <span class="fa fa-star {% if restaurant.average_rating == 5 %} checked {% endif %}"></span>
      <h2>Menu</h2>
      <hr>
     {% for category in menu_category %}

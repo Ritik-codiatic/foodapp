@@ -25,14 +25,27 @@
     })
 </script>
 <div class="container">
-
+    <div style="margin-left: 700px;">
+        <form action="" >
+        <input type="text" name="search" placeholder="Search in Menu" class="fas fa-search">
+        <input type="submit" value="search" class="fas fa-search">
+        <!-- <a href="#" class="search-btn" >
+               <i class="fas fa-search"></i>
+        </a> -->
+        </form>
+    </div>
+    <h2>{{menu_category.name}}</h2>
+    <hr>
     {% for item in items %}
-   
+    {% if item.item.food_type == 'veg' %}
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Veg_symbol.svg/1024px-Veg_symbol.svg.png" height="15px" width="15px" alt="">
+    {% else %}
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Non_veg_symbol.svg/2048px-Non_veg_symbol.svg.png" height="15px" width="15px" alt="">
+    {% endif %}
     {{item.item.name}}
-    {{item.item.food_type}}
     <input type="hidden" name="item_id" value="{{item.id}}" class="itemid">
-     {{item.price}}
-    <img src="{{item.image.url}}" alt="noimage" height="100px" width="100px">
+     Rs {{item.price}}
+    <img src="{{item.image.url}}" alt="noimage" height="100px" width="100px" style="border-radius: 25px;">
     {% if request.user.is_authenticated %}
              <!-- <a href="/addcart/{{restaurant.id}}/{{price.id}}"><i class="fa fa-cart-plus" style="font-size: 1.73em;" aria-hidden="true"></i></a>
              <a href="/cart/{{price.id}}"><i class="fa fa-minus" style="font-size: 1.73em;" aria-hidden="true"></i></a> -->

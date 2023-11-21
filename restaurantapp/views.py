@@ -63,7 +63,7 @@ class HomeView(View):
     
         return render(request, self.template_name, {'page_obj':page_obj})
     
-from location_field.forms.plain import PlainLocationField
+
 class RestaurantView(View):
     '''view for showing restaurant menu category and its detail'''
 
@@ -72,8 +72,7 @@ class RestaurantView(View):
     def get(self, request, *args, **kwargs):
         restaurant_id = kwargs['restaurant_id']
         restaurant = Restaurant.objects.get(id=restaurant_id)
-        location = PlainLocationField(based_fields=['city'],
-                                  initial=restaurant.location)
+        
         
         menu = Menu.objects.filter(restaurant__id = restaurant_id)
         # not optimized
@@ -84,7 +83,7 @@ class RestaurantView(View):
         for i in list1:
             if i not in menu_category:
                 menu_category.append(i)
-        return render(request, self.template_name, context = {'restaurant':restaurant,'menu_category':menu_category,'location':location})
+        return render(request, self.template_name, context = {'restaurant':restaurant,'menu_category':menu_category,})
     
 class ItemView(View):
     '''view to display menu items of a category'''
@@ -95,19 +94,24 @@ class ItemView(View):
         category_id = kwargs['category_id']
         restaurant_id = kwargs['restaurant_id']
         menucategory = MenuCategory.objects.get(id = category_id)
-        restaurant = Restaurant.objects.get(id = restaurant_id)      
-        items = Menu.objects.filter(restaurant=restaurant,item__menu_category = menucategory)
+        restaurant = Restaurant.objects.get(id = restaurant_id)
+        
+        if request.GET.get('search'):
+            item_name = request.GET.get('search')
+            items = Menu.objects.filter(restaurant=restaurant, item__menu_category = menucategory,item__name__icontains=item_name)
+        else:
+            items = Menu.objects.filter(restaurant=restaurant, item__menu_category = menucategory)
         # .annotate(quantity=Subquery(
         # CartItem.objects.filter(
         #     cart_item__restaurant=restaurant,cart_item__item__menu_category=menucategory)))
-        return render(request, self.template_name, context = {'items':items,'menucategory':menucategory,'restaurant':restaurant})
+        return render(request, self.template_name, context = {'items':items,'menu_category':menucategory,'restaurant':restaurant})
 
 class EditItemView(LoginRequiredMixin, View):
     '''view to edit restaurant item'''
-
+    # use update view
     login_url =  'login'
     redirect_field_name = 'login'
-    template_name = 'edit_item.html'  
+    template_name = 'edit_item.html'
     itemform_class = ItemForm
     itempriceform_class = ItemPriceForm
     def get(self, request, *args, **kwargs):
@@ -119,13 +123,14 @@ class EditItemView(LoginRequiredMixin, View):
         return render(request, self.template_name, context={'itemform':itemform,'itempriceform':itempriceform})
     
     def post(self, request, *args, **kwargs):
-        itempriceform = self.itempriceform_class(request.POST,request.FILES)
-        itemform = self.itemform_class(request.POST)
-        breakpoint()
+        item_id = kwargs['item_id']
+        menu = Menu.objects.get(id = item_id)
+        itempriceform = self.itempriceform_class(request.POST,request.FILES,instance = menu)
+        menuitem = MenuItem.objects.get(id = menu.item.id)
+        itemform = self.itemform_class(request.POST,instance=menuitem)
         if itemform.is_valid() and itempriceform.is_valid():
             itempriceform.save()
             # itemform.save()
-            breakpoint()
             return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
     
     def delete(self, request, *args, **kwargs):
@@ -152,6 +157,7 @@ class AddRestaurantView(LoginRequiredMixin, View):
             restaurantform.instance.owner = owner
             restaurantform.save()
             return redirect('/')
+        return render(request, self.template_name, context = {'restaurantform':restaurantform })
         
     
 class RestaurantHome(View):
@@ -389,7 +395,7 @@ def stripe_webhook(request):
         cart.is_paid = True
         cart.save()
         subject = 'thanks for ordering from FoodTresure'
-        message = f'Hi , Please review your order from this link /payments/order_history.html . your order no. is  '
+        #message = f'Hi , Please review your order from this link /payments/order_history.html . your order no. is  '
         email_from = settings.EMAIL_HOST_USER
         recipient_list = ['ritik.makwan@codiatic.com', ]
         html_content = render_to_string(

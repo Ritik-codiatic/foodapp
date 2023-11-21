@@ -2,9 +2,11 @@ from django.test import TestCase
 from .models import CustomUser
 from .forms import UserForm
 from django.urls import reverse
+from .user import UserFactory
+import factory
 class UserTestCase(TestCase):
     def setUp(self):
-            CustomUser.objects.create(
+            UserFactory(
                 first_name="abhishek",
                 last_name="pawar",
                 email="abhishek@gmail.com",
@@ -12,6 +14,7 @@ class UserTestCase(TestCase):
                 user_type="Customer",
                 address="indore",
                 gender="Male")
+            
     
     def test_user_is_created(self):
         '''user is created successfully '''
@@ -28,9 +31,20 @@ class UserTestCase(TestCase):
 
     def test_user_is_deleted(self):
         '''user is deleted'''
+        user = CustomUser.objects.get(email="abhishek@gmail.com")
+        breakpoint()
 
 
 
+
+    def multiple_user_created(self):
+        '''multiple user is created'''
+        user = UserFactory.create_batch(5,
+            first_name='abhishek',
+            mobile_number=factory.Sequence(lambda n:'{0}'.format(n)),
+            email=factory.Sequence(lambda i:'{0}@gmail.com'.format(i)))
+        
+        self.assertEqual(len(user),5)
     
 
 class UserFormTestCase(TestCase):
