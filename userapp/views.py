@@ -25,10 +25,11 @@ class SignupFormView(View):
     
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
-        
+        breakpoint()
         if form.is_valid():
             form.save()
             return redirect('login')
+        messages.error(request,"")
         return render(request, self.template_name, context = {'form':form})
 
 

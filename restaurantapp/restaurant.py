@@ -5,7 +5,9 @@ from userapp.user import UserFactory
 import datetime
 faker = Factory.create()
 
+
 class RestaurantFactory(factory.django.DjangoModelFactory):
+   
     class Meta:
         model = Restaurant
         django_get_or_create = ('name','owner','address','opening_time','closing_time','restaurant_type') 
@@ -13,5 +15,5 @@ class RestaurantFactory(factory.django.DjangoModelFactory):
     opening_time = datetime.datetime.now()
     closing_time = datetime.datetime.now()
     restaurant_type = 'veg'
-    owner = UserFactory()
+    owner = factory.SubFactory(UserFactory)
     address = faker.address()

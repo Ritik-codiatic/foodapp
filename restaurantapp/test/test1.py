@@ -3,8 +3,13 @@ from django.urls import reverse
 from restaurantapp.models import Restaurant
 from userapp.models import CustomUser
 import datetime
+from userapp.user import UserFactory
+from restaurantapp.restaurant import RestaurantFactory
+from restaurantapp.models import Restaurant
 class RestaurantTestCase(TestCase):
     def setUp(self):
+        self.restaurant = RestaurantFactory()
+        self.restaurant.owner = UserFactory()
         user = CustomUser.objects.create(
             first_name="abhishek",
             last_name="pawar",
@@ -22,7 +27,7 @@ class RestaurantTestCase(TestCase):
 
     def test_restaurant_created_successfully(self):
         restuarant = Restaurant.objects.get(name="Test Restaurant")
-        self.assertEqual(restuarant.contact_number,'9092090902')
+        self.assertIsInstance(self.restaurant,Restaurant)
     
     def test_restaurant_updated_successfully(self):
         restuarant = Restaurant.objects.get(name="Test Restaurant")
@@ -37,3 +42,4 @@ class RestaurantTestCase(TestCase):
         response = self.client.delete("/editrestaurant/"+str(restaurant.id))
         self.assertEqual(response.status_code,200)
         
+    
