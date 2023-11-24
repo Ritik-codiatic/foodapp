@@ -48,3 +48,5 @@ class TestError(TestCase):
             'password1':faker.password(),
             'password2':faker.password()})
         self.assertEqual(response.context['form'].errors['email'][0],'A user is already registered with this email address')
+
+    

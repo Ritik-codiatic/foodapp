@@ -37,3 +37,5 @@ class UserTestCase(TestCase):
             email=factory.Sequence(lambda i:'{0}@gmail.com'.format(i)))
         
         self.assertEqual(len(user),5)
+    
+    

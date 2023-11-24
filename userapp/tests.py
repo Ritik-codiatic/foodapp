@@ -29,14 +29,6 @@ class UserTestCase(TestCase):
         user.save()
         self.assertEqual(user.first_name,"abhi")
 
-    def test_user_is_deleted(self):
-        '''user is deleted'''
-        user = CustomUser.objects.get(email="abhishek@gmail.com")
-        breakpoint()
-
-
-
-
     def multiple_user_created(self):
         '''multiple user is created'''
         user = UserFactory.create_batch(5,
